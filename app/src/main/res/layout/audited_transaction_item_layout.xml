@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/custom_alert_dialog_background"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/date_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_calendar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/transaction_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="02-11-2023"
+        app:layout_constraintBottom_toBottomOf="@+id/date_icon"
+        app:layout_constraintStart_toEndOf="@+id/date_icon"
+        app:layout_constraintTop_toTopOf="@+id/date_icon" />
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:gravity="end"
+        android:text="kareem"
+        android:textColor="#689F38"
+        app:layout_constraintBottom_toBottomOf="@+id/date_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/transaction_date"
+        app:layout_constraintTop_toTopOf="@+id/date_icon" />
+
+    <TextView
+        android:id="@+id/item_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Gasket S.S.  1½ , #600 Inner Ring SS  Outer Ring C.S Graphite"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+
+    <TextView
+        android:id="@+id/org_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="EPP Spare Parts Organization"
+        app:layout_constraintEnd_toStartOf="@+id/sub_inventory"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_desc" />
+
+    <TextView
+        android:id="@+id/sub_inventory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SpareParts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/org_name"
+        app:layout_constraintTop_toTopOf="@+id/org_name" />
+
+    <TextView
+        android:id="@+id/locator_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="G.f.g.h.b.e"
+        app:layout_constraintBottom_toBottomOf="@+id/qty"
+        app:layout_constraintEnd_toStartOf="@+id/qty"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/qty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8"
+        android:textColor="#689F38"
+        android:textSize="25sp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/locator_code"
+        app:layout_constraintTop_toBottomOf="@+id/org_name" />
+
+    <TextView
+        android:id="@+id/uom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EA"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/qty"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/qty" />
+</androidx.constraintlayout.widget.ConstraintLayout>

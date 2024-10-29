@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="net.gbs.epp_project.Ui.SplashAndSignIn.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+        <action
+            android:id="@+id/action_splashFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/mainMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Menus.MainMenuFragment"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_mainMenuFragment_to_auditMenuFragment"
+            app:destination="@id/auditMenuFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+        <action
+            android:id="@+id/action_mainMenuFragment_to_receiving_nav_graph"
+            app:destination="@id/receiving_nav_graph" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_return_nav_graph"
+            app:destination="@id/return_nav_graph" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_transfer_nav_graph"
+            app:destination="@id/transfer_nav_graph" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_eppOrganizationsFinalProductMenuFragment"
+            app:destination="@id/eppOrganizationsFinalProductMenuFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_itemInfoFragment"
+            app:destination="@id/itemInfoFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_issueMenuFragment"
+            app:destination="@id/issueMenuFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_customerNameSearchFragment"
+            app:destination="@id/customerNameSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/auditMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Menus.AuditMenuFragment"
+        android:label="fragment_audit_menu"
+        tools:layout="@layout/fragment_audit_menu" >
+        <action
+            android:id="@+id/action_auditMenuFragment_to_auditListFragment"
+            app:destination="@id/auditListFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+        <action
+            android:id="@+id/action_auditMenuFragment_to_finishTrackingAuditListFragment"
+            app:destination="@id/finishTrackingAuditListFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+        <action
+            android:id="@+id/action_auditMenuFragment_to_cycleCountFragment"
+            app:destination="@id/cycleCountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startAuditFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.StartAudit.StartAuditFragment"
+        android:label="fragment_start_audit"
+        tools:layout="@layout/fragment_start_audit" >
+        <action
+            android:id="@+id/action_startAuditFragment_to_auditedListFragment"
+            app:destination="@id/auditedListFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/auditListFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.AuditList.AuditListFragment"
+        android:label="fragment_audit_list"
+        tools:layout="@layout/fragment_audit_list" >
+        <action
+            android:id="@+id/action_auditListFragment_to_startAuditFragment"
+            app:destination="@id/startAuditFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/auditedListFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.AuditedList.AuditedListFragment"
+        android:label="fragment_audited_list"
+        tools:layout="@layout/fragment_audited_list" />
+    <fragment
+        android:id="@+id/finishTrackingAuditListFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.FinishTracking.FinishTrackingAuditList.FinishTrackingAuditListFragment"
+        android:label="fragment_finish_tracking_audit_list"
+        tools:layout="@layout/fragment_finish_tracking_audit_list" >
+        <action
+            android:id="@+id/action_finishTrackingAuditListFragment_to_startFinishTrackingFragment"
+            app:destination="@id/startFinishTrackingFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/startFinishTrackingFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.FinishTracking.StartFinishing.StartFinishTrackingFragment"
+        android:label="fragment_start_finish_tracking"
+        tools:layout="@layout/fragment_start_finish_tracking"
+        app:enterAnim="@anim/push_right_in"
+        app:exitAnim="@anim/push_down_out"
+        app:popEnterAnim="@anim/push_right_in"
+        app:popExitAnim="@anim/push_up_out"/>
+    <fragment
+        android:id="@+id/epp_organizations_issue_fragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.IssueMenus.IssueMenu.EppOrganizationsIssueFragment"
+        android:label="fragment_epp_organizations_issue"
+        tools:layout="@layout/fragment_epp_organizations_issue" >
+        <action
+            android:id="@+id/action_epp_organizations_issue_fragment_to_transactMoveOrderFragment"
+            app:destination="@id/transactMoveOrderFragment" />
+        <action
+            android:id="@+id/action_epp_organizations_issue_fragment_to_transactSparePartsWorkOrderFragment"
+            app:destination="@id/transactSparePartsWorkOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactMoveOrderFragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.TransactMoveOrderChemicalFactory.TransactMoveOrderFragment"
+        android:label="fragment_transact_move_order"
+        tools:layout="@layout/fragment_transact_move_order" >
+        <action
+            android:id="@+id/action_transactMoveOrderFragment_to_transactionHistoryFragment"
+            app:destination="@id/transactionHistoryFragment"
+            app:enterAnim="@anim/push_right_in"
+            app:exitAnim="@anim/push_down_out"
+            app:popEnterAnim="@anim/push_right_in"
+            app:popExitAnim="@anim/push_up_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/transactionHistoryFragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.TransactMoveOrderChemicalFactory.TransactionHistory.TransactionHistoryFragment"
+        android:label="fragment_transaction_history"
+        tools:layout="@layout/fragment_transaction_history" />
+    <include app:graph="@navigation/receiving_nav_graph" />
+    <include app:graph="@navigation/return_nav_graph" />
+    <fragment
+        android:id="@+id/cycleCountFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.CycleCount.CycleCount.CycleCountFragment"
+        android:label="fragment_cycle_count"
+        tools:layout="@layout/fragment_cycle_count" >
+        <action
+            android:id="@+id/action_cycleCountFragment_to_startCycleCountByItemFragment"
+            app:destination="@id/startCycleCountByItemFragment" />
+        <action
+            android:id="@+id/action_cycleCountFragment_to_startCycleCountByLocatorFragment"
+            app:destination="@id/startCycleCountByLocatorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startCycleCountByItemFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.CycleCount.StartCycleCount.ByItem.StartCycleCountByItemFragment"
+        android:label="fragment_start_cycle_count_by_item"
+        tools:layout="@layout/fragment_start_cycle_count_by_item" >
+        <action
+            android:id="@+id/action_startCycleCountByItemFragment_to_onHandFragment"
+            app:destination="@id/onHandFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startCycleCountByLocatorFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.CycleCount.StartCycleCount.ByLocator.StartCycleCountByLocatorFragment"
+        android:label="fragment_start_cycle_count_by_locator"
+        tools:layout="@layout/fragment_start_cycle_count_by_locator" >
+        <action
+            android:id="@+id/action_startCycleCountByLocatorFragment_to_onHandFragment"
+            app:destination="@id/onHandFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onHandFragment"
+        android:name="net.gbs.epp_project.Ui.Audit.CycleCount.OnHand.OnHandFragment"
+        android:label="fragment_on_hand"
+        tools:layout="@layout/fragment_on_hand" />
+    <fragment
+        android:id="@+id/itemInfoFragment"
+        android:name="net.gbs.epp_project.Ui.ItemInfo.ItemInfoFragment"
+        android:label="ItemInfoFragment"
+        tools:layout="@layout/fragment_pos_info"/>
+    <include app:graph="@navigation/transfer_nav_graph" />
+    <fragment
+        android:id="@+id/transactSparePartsWorkOrderFragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.SpareParts.TransactSparePartsWorkOrderFragment"
+        android:label="fragment_transact_spare_parts_work_order"
+        tools:layout="@layout/fragment_transact_spare_parts_work_order" >
+        <action
+            android:id="@+id/action_transactSparePartsWorkOrderFragment_to_transactionHistoryFragment"
+            app:destination="@id/transactionHistoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eppOrganizationsFinalProductMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.IssueMenus.FinalProductsMenu.EppOrganizationsFinalProductMenuFragment"
+        android:label="EppOrganizationsFinalProductMenuFragment" >
+
+        <action
+            android:id="@+id/action_eppOrganizationsFinalProductMenuFragment_to_finishedProductsItemInfoFragment"
+            app:destination="@id/finishedProductsItemInfoFragment" />
+        <action
+            android:id="@+id/action_eppOrganizationsFinalProductMenuFragment_to_finishProductsTransactMoveOrderFragment"
+            app:destination="@id/finishProductsTransactMoveOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/issueMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Menus.IssueMenuFragment"
+        android:label="fragment_issue_menu"
+        tools:layout="@layout/fragment_issue_menu" >
+        <action
+            android:id="@+id/action_issueMenuFragment_to_epp_organizations_issue_fragment2"
+            app:destination="@id/epp_organizations_issue_fragment" />
+        <action
+            android:id="@+id/action_issueMenuFragment_to_transactSparePartsWorkOrderFragment"
+            app:destination="@id/transactSparePartsWorkOrderFragment" />
+        <action
+            android:id="@+id/action_issueMenuFragment_to_transactMoveOrderFragment"
+            app:destination="@id/transactMoveOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishedProductsItemInfoFragment"
+        android:name="net.gbs.epp_project.Ui.FinishedProductsItemInfo.FinishedProductsItemInfoFragment"
+        android:label="FinishedProductsItemInfoFragment" />
+    <fragment
+        android:id="@+id/customerNameSearchFragment"
+        android:name="net.gbs.epp_project.Ui.ContainersReceiving.CustomerDataSearch.CustomerNameSearchFragment"
+        android:label="fragment_customer_name_search"
+        tools:layout="@layout/fragment_customer_name_search" >
+        <action
+            android:id="@+id/action_customerNameSearchFragment_to_addNewTruckFragment"
+            app:destination="@id/addNewTruckFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewTruckFragment"
+        android:name="net.gbs.epp_project.Ui.ContainersReceiving.AddNewTruck.AddNewTruckFragment"
+        android:label="fragment_add_new_truck"
+        tools:layout="@layout/fragment_add_new_truck" />
+    <fragment
+        android:id="@+id/finishProductsTransactMoveOrderFragment"
+        android:name="net.gbs.epp_project.Ui.Issue.EppOrganizations.FinishProductsReceiveIssue.FinishProductsTransactMoveOrderFragment"
+        android:label="FinishProductsTransactMoveOrderFragment" >
+        <action
+            android:id="@+id/action_finishProductsTransactMoveOrderFragment_to_transactionHistoryFragment"
+            app:destination="@id/transactionHistoryFragment" />
+    </fragment>
+</navigation>

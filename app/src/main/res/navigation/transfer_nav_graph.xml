@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transfer_nav_graph"
+    app:startDestination="@id/eppOrganizationsTransferFragment">
+
+    <fragment
+        android:id="@+id/eppOrganizationsTransferFragment"
+        android:name="net.gbs.epp_project.Ui.Transfer.EppOrganizationsTransferFragment"
+        android:label="EppOrganizationsTransferFragment"
+        tools:layout="@layout/fragment_epp_organizations_transfer">
+        <action
+            android:id="@+id/action_eppOrganizationsTransferFragment_to_startTransferFragment"
+            app:destination="@id/startTransferFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startTransferFragment"
+        android:name="net.gbs.epp_project.Ui.Transfer.StartTransfer.StartTransferFragment"
+        android:label="fragment_start_transfer"
+        tools:layout="@layout/fragment_start_transfer" />
+</navigation>

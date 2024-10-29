@@ -1,0 +1,28 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url "https://jitpack.io"
+        }
+//        maven {
+//            url = "https://zebratech.jfrog.io/artifactory/EMDK-Android/"
+//        }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://jitpack.io"
+        }
+//        maven {
+//            url = "https://zebratech.jfrog.io/artifactory/EMDK-Android/"
+//        }
+    }
+}
+rootProject.name = "Epp_Project"
+include ':app'

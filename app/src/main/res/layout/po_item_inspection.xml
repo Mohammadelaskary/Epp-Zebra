@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="7dp"
+    android:background="?android:attr/selectableItemBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="@dimen/recycler_view_items_margin"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:animateLayoutChanges="true"
+        app:layout_constraintTop_toTopOf="@+id/po_number">
+
+        <TextView
+            android:id="@+id/po_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="253366"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/vendor" />
+
+        <TextView
+            android:id="@+id/vendor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Vendor"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/po_number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--            android:id="@+id/qties"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:layout_constraintEnd_toEndOf="@+id/supplier"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/supplier">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/received_qty"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="50"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintEnd_toStartOf="@+id/slash"-->
+        <!--                app:layout_constraintHorizontal_bias="0.5"-->
+        <!--                app:layout_constraintHorizontal_chainStyle="packed"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                tools:layout_editor_absoluteY="0dp" />-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/slash"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="/"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintEnd_toStartOf="@+id/po_qty"-->
+        <!--                app:layout_constraintHorizontal_bias="0.5"-->
+        <!--                app:layout_constraintStart_toEndOf="@+id/received_qty"-->
+        <!--                tools:layout_editor_absoluteY="0dp" />-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/po_qty"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="70"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintHorizontal_bias="0.5"-->
+        <!--                app:layout_constraintStart_toEndOf="@+id/slash"-->
+        <!--                tools:layout_editor_absoluteY="0dp" />-->
+        <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <ImageView
+            android:id="@+id/date_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:src="@drawable/ic_calendar_today"
+            app:layout_constraintBottom_toBottomOf="@+id/po_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/po_date" />
+
+        <TextView
+            android:id="@+id/po_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:text="12-03-2012"
+            app:layout_constraintStart_toEndOf="@+id/date_icon"
+            app:layout_constraintTop_toBottomOf="@+id/vendor" />
+        <ImageView
+            android:id="@+id/receipt_no_icon"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/receipt_no_icon"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/receipt_number"
+            app:layout_constraintEnd_toStartOf="@+id/receipt_number"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="@+id/receipt_number" />
+
+        <TextView
+            android:id="@+id/receipt_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="54651651"
+            app:layout_constraintBottom_toBottomOf="@+id/po_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/po_date" />
+
+        <TextView
+            android:id="@+id/item_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Item Description"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/received_qty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/po_date" />
+
+        <TextView
+            android:id="@+id/received_qty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10000"
+            app:layout_constraintBottom_toBottomOf="@+id/item_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/item_description" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

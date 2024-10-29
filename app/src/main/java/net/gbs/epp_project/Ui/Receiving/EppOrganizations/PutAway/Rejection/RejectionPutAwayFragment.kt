@@ -1,0 +1,116 @@
+package net.gbs.epp_project.Ui.Receiving.EppOrganizations.PutAway.Rejection
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.findNavController
+import net.gbs.epp_project.Base.BaseFragmentWithViewModel
+import net.gbs.epp_project.Base.BundleKeys.PO_DETAILS_ITEM_2_Key
+import net.gbs.epp_project.Base.BundleKeys.PUT_AWAY_REJECT
+import net.gbs.epp_project.Model.PODetailsItem2
+import net.gbs.epp_project.Model.Status
+import net.gbs.epp_project.R
+import net.gbs.epp_project.Tools.Tools
+import net.gbs.epp_project.databinding.FragmentPutAwayBinding
+
+class RejectionPutAwayFragment : BaseFragmentWithViewModel<RejectionPutAwayViewModel,FragmentPutAwayBinding>(),View.OnClickListener,
+    PurchaseOrdersRejectionAdapter.PutAwayItemClick {
+
+    companion object {
+        fun newInstance() = RejectionPutAwayFragment()
+    }
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentPutAwayBinding
+        get() = FragmentPutAwayBinding::inflate
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpRecyclerView()
+        observeGettingPOs()
+        Tools.attachButtonsToListener(this,binding.search)
+        if (viewModel.poNum!=null||viewModel.receiptNo!=null){
+            binding.poNumber.editText?.setText(viewModel.poNum)
+            binding.receiptNo.editText?.setText(viewModel.receiptNo)
+            viewModel.getPurchaseOrderReceiptNoList(viewModel.poNum!!,viewModel.receiptNo!!)
+        }
+    }
+    private fun observeGettingPOs() {
+        viewModel.poDetailsItemsStatus.observe(requireActivity()){
+            when(it.status){
+                Status.LOADING ->{
+                    loadingDialog.show()
+                    binding.errorMessage.visibility = View.GONE
+                }
+                Status.SUCCESS ->{
+                    loadingDialog.hide()
+                }
+                else -> {
+                    loadingDialog.hide()
+                    binding.errorMessage.visibility = View.VISIBLE
+                    binding.errorMessage.text = it.message
+                }
+            }
+        }
+        viewModel.poDetailsItemsLiveData.observe(requireActivity()) { it ->
+            val itemList = mutableListOf<PODetailsItem2>()
+            it.forEach {
+                if (it.isinspected.toBoolean() && !it.isRejectedDelivered.toBoolean()&&it.itemqtyRejected!=0) {
+                    itemList.add(it)
+                }
+            }
+            if (itemList.isNotEmpty()) {
+                poAdapter.poList = itemList
+            } else {
+                binding.errorMessage.visibility = View.VISIBLE
+                binding.errorMessage.text       =
+                    getString(R.string.no_accepted_quantity_to_be_delivered)
+                poAdapter.poList = itemList
+            }
+        }
+    }
+    private lateinit var poAdapter: PurchaseOrdersRejectionAdapter
+    private fun setUpRecyclerView() {
+        poAdapter = PurchaseOrdersRejectionAdapter(this)
+        binding.poList.adapter = poAdapter
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.search ->{
+
+                val poNum           = binding.poNumber.editText?.text.toString().trim()
+                val receiptNum      = binding.receiptNo.editText?.text.toString().trim()
+                if (poNum.isNotEmpty()||receiptNum.isNotEmpty()){
+                    viewModel.getPurchaseOrderReceiptNoList(poNum,receiptNum)
+                } else {
+                    if (poNum.isEmpty())
+                        binding.poNumber.error = getString(R.string.please_enter_po_number)
+                    if (receiptNum.isEmpty())
+                        binding.receiptNo.error = getString(R.string.please_enter_receipt_no)
+                }
+            }
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+            Tools.changeFragmentTitle(getString(R.string.reject), requireActivity())
+
+    }
+
+    val bundle = Bundle()
+    override fun putAwayItemClicked(poDetailsItem2: PODetailsItem2) {
+        bundle.putString(PO_DETAILS_ITEM_2_Key,PODetailsItem2.toJson(poDetailsItem2))
+        bundle.putBoolean(PUT_AWAY_REJECT,true)
+        view?.findNavController()?.navigate(R.id.action_rejectionPutAwayFragment_to_startPutAwayFragment,bundle)
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val poNum = binding.poNumber.editText?.text.toString().trim()
+        val receiptNo = binding.receiptNo.editText?.text.toString().trim()
+        viewModel.poNum = poNum
+        viewModel.receiptNo = receiptNo
+    }
+
+}

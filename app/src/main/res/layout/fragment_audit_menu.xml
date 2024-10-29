@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".Ui.Menus.AuditMenuFragment">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/start_audit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:text="@string/start_audit" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/finish_audit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:visibility="gone"
+        android:text="@string/finish_audit" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/export_audit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:visibility="gone"
+        android:text="@string/export_audit" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cycle_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:visibility="visible"
+        android:text="@string/cycle_count" />
+</LinearLayout>

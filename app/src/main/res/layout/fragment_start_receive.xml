@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".Ui.StartReceiveFragment">
+
+    <TextView
+        android:id="@+id/warehouse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/warehouse"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/po_header"
+        layout="@layout/po_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/warehouse" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/org"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/organization"
+        app:layout_constraintTop_toBottomOf="@+id/po_header"
+        app:startIconDrawable="@drawable/organization_icon">
+
+        <AutoCompleteTextView
+            android:id="@+id/organization_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="none"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/item_code"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:visibility="visible"
+        app:errorTextColor="@android:color/holo_red_dark"
+        app:layout_constraintEnd_toStartOf="@+id/items_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receipt_no"
+        app:startIconDrawable="@drawable/ic_barcode_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/item_code"
+            android:imeOptions="actionGo"
+            android:lines="1"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/received_po_lines"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/items_list"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:minWidth="36dp"
+        android:minHeight="36dp"
+        android:textSize="15sp"
+        android:theme="?buttonStyleSmall"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/baseline_menu_24"
+        app:layout_constraintBottom_toBottomOf="@+id/item_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/item_code" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/item_data_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="add,receipt_no,is_new_receipt_no,received_po_lines,item_code,qty,save,po_details,received_list,transaction_date,items_list" />
+
+    <CheckBox
+        android:id="@+id/is_new_receipt_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_receipt_no"
+        app:layout_constraintEnd_toEndOf="@+id/org"
+        app:layout_constraintStart_toStartOf="@+id/org"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/receipt_no"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/receipt_no"
+        app:layout_constraintTop_toBottomOf="@+id/is_new_receipt_no"
+        app:startIconDrawable="@drawable/receipt_no_icon">
+
+        <AutoCompleteTextView
+            android:id="@+id/receipt_numbers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="date"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/transaction_date"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/date"
+        app:layout_constraintTop_toBottomOf="@+id/org"
+        app:startIconDrawable="@drawable/ic_calendar_today">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/date_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:inputType="date"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:enabled="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/qty"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:visibility="visible"
+        app:errorTextColor="@android:color/holo_red_dark"
+        app:layout_constraintEnd_toEndOf="@+id/items_list"
+        app:layout_constraintStart_toStartOf="@+id/item_code"
+        app:layout_constraintTop_toBottomOf="@+id/item_code">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789"
+            android:gravity="center"
+            android:hint="@string/qty"
+            android:imeOptions="actionGo"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#7F7D7D"
+        android:paddingHorizontal="30dp"
+        android:text="@string/add"
+        android:drawableStart="@drawable/ic_add_24"
+        app:cornerRadius="@dimen/button_radius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qty" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:paddingHorizontal="30dp"
+        android:text="@string/save"
+        app:cornerRadius="@dimen/button_radius"
+        app:layout_constraintEnd_toStartOf="@+id/po_details"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/received_po_lines" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/po_details"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="30dp"
+        android:text="@string/po_details"
+        app:cornerRadius="@dimen/button_radius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/save"
+        app:layout_constraintTop_toTopOf="@+id/save" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/received_list"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="30dp"
+        android:text="@string/received_list"
+        app:cornerRadius="@dimen/button_radius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

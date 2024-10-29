@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".Ui.Menus.IssueMenuFragment">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/factory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/chemical_factory"
+        app:layout_constraintBottom_toTopOf="@+id/spare_parts"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/spare_parts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/spare_parts"
+        app:layout_constraintBottom_toTopOf="@+id/indirect_chemicals"
+        app:layout_constraintTop_toBottomOf="@+id/factory"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/indirect_chemicals"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/indirect_chemical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spare_parts"
+        tools:layout_editor_absoluteX="0dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

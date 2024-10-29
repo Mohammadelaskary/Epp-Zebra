@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/receiving_nav_graph"
+    app:startDestination="@id/eppOrganizationsReceivingFragment">
+
+    <fragment
+        android:id="@+id/eppOrganizationsReceivingFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.EppOrganizationsReceivingFragment"
+        android:label="fragment_epp_organizations_receiving"
+        tools:layout="@layout/fragment_epp_organizations_receiving" >
+        <action
+            android:id="@+id/action_eppOrganizationsReceivingFragment_to_receivePOFragment"
+            app:destination="@id/receivePOFragment" />
+        <action
+            android:id="@+id/action_eppOrganizationsReceivingFragment_to_inspectionFragment"
+            app:destination="@id/inspectionFragment" />
+        <action
+            android:id="@+id/action_eppOrganizationsReceivingFragment_to_putAwayFragment"
+            app:destination="@id/putAwayFragment" />
+        <action
+            android:id="@+id/action_eppOrganizationsReceivingFragment_to_itemInfoFragment"
+            app:destination="@id/posInfoFragment" />
+        <action
+            android:id="@+id/action_eppOrganizationsReceivingFragment_to_rejectionPutAwayFragment"
+            app:destination="@id/rejectionPutAwayFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/receivePOFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.Receive.ReceivePO.ReceivePOFragment"
+        android:label="ReceivePOFragment" >
+        <action
+            android:id="@+id/action_receivePOFragment_to_startReceiveFragment"
+            app:destination="@id/startReceiveFragment" />
+        <action
+            android:id="@+id/action_receivePOFragment_to_PODetailsFragment"
+            app:destination="@id/PODetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startReceiveFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.Receive.StartReceiving.StartReceiveFragment"
+        android:label="StartReceiveFragment" >
+        <action
+            android:id="@+id/action_startReceiveFragment_to_itemInfoFragment"
+            app:destination="@id/posInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inspectionFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.Inspection.InspectionFragment"
+        android:label="InspectionFragment" >
+        <action
+            android:id="@+id/action_inspectionFragment_to_startInspectionFragment"
+            app:destination="@id/startInspectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startInspectionFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.Inspection.StartInspection.StartInspectionFragment"
+        android:label="StartInspectionFragment" />
+    <fragment
+        android:id="@+id/PODetailsFragment"
+        android:name="com.example.mobco.Ui.PODetailsFragment"
+        android:label="PODetailsFragment" />
+    <fragment
+        android:id="@+id/putAwayFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.PutAway.Deliver.PutAwayFragment"
+        android:label="fragment_put_away"
+        tools:layout="@layout/fragment_put_away" >
+        <action
+            android:id="@+id/action_putAwayFragment_to_startPutAwayFragment"
+            app:destination="@id/startPutAwayFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/startPutAwayFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.PutAway.StartPutAway.StartPutAwayFragment"
+        android:label="fragment_start_put_away"
+        tools:layout="@layout/fragment_start_put_away" />
+    <fragment
+        android:id="@+id/posInfoFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.ItemInfo.POsInfoFragment"
+        android:label="fragment_pos_info"
+        tools:layout="@layout/fragment_pos_info" />
+    <fragment
+        android:id="@+id/rejectionPutAwayFragment"
+        android:name="net.gbs.epp_project.Ui.Receiving.EppOrganizations.PutAway.Rejection.RejectionPutAwayFragment"
+        android:label="RejectionPutAwayFragment" >
+        <action
+            android:id="@+id/action_rejectionPutAwayFragment_to_startPutAwayFragment"
+            app:destination="@id/startPutAwayFragment" />
+    </fragment>
+</navigation>

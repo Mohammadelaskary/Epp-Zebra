@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/return_nav_graph"
+    app:startDestination="@id/returnMainMenuFragment">
+
+    <fragment
+        android:id="@+id/returnMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnMenu.ReturnMenuFragment"
+        android:label="fragment_return_menu"
+        tools:layout="@layout/fragment_return_menu" >
+        <action
+            android:id="@+id/action_returnMenuFragment_to_returnToWipFragment"
+            app:destination="@id/returnToWipFragment" />
+        <action
+            android:id="@+id/action_returnMenuFragment_to_returnToWarehouseFragment"
+            app:destination="@id/returnToWarehouseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/returnToVendorFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnToVendor.ReturnToVendorFragment"
+        android:label="fragment_return_to_vendor"
+        tools:layout="@layout/fragment_return_to_vendor" />
+    <fragment
+        android:id="@+id/startReturnFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnToWarehouse.StartReturn.StartReturnFragment"
+        android:label="fragment_start_return"
+        tools:layout="@layout/fragment_start_return" />
+    <fragment
+        android:id="@+id/returnToWipFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnToWip.ReturnToWipFragment"
+        android:label="ReturnToWipFragment"
+        tools:layout="@layout/fragment_return_to_wip"/>
+    <fragment
+        android:id="@+id/returnToWarehouseFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnToWarehouse.ReturnToWarehouseFragment"
+        android:label="ReturnToWarehouseFragment" />
+    <fragment
+        android:id="@+id/returnMainMenuFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnMenu.ReturnMainMenuFragment"
+        android:label="fragment_return_main_menu"
+        tools:layout="@layout/fragment_return_main_menu" >
+        <action
+            android:id="@+id/action_returnMainMenuFragment_to_returnToVendorFragment"
+            app:destination="@id/returnToVendorFragment" />
+        <action
+            android:id="@+id/action_returnMainMenuFragment_to_returnMenuFragment"
+            app:destination="@id/returnMenuFragment" />
+    </fragment>
+</navigation>
