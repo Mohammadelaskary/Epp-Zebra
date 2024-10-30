@@ -325,6 +325,7 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
                 isReady = false
             }
         }
+
         return isReady
     }
 

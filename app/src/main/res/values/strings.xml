@@ -190,7 +190,7 @@
     <string name="please_enter_valid_work_order_number">Please enter valid work order number!</string>
     <string name="wrong_po_number">Wrong purchase order!</string>
     <string name="this_purchase_order_has_no_items">This purchase order has no items!</string>
-    <string name="item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order">Item code is wrong or doesn\'t belong to this purchase order!</string>
+    <string name="item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order">Item code is wrong or doesn\'t belong to this purchase order or receipt number!</string>
     <string name="wrong_purchase_order_for_selected_organization">Wrong purchase order for selected organization!</string>
     <string name="quantity_must_be_less_than_or_equal_to">"Quantity must be less than or equal to "</string>
     <string name="select_organization_first">Select organization first!</string>
@@ -264,4 +264,5 @@
     <string name="remaining">Remaining</string>
     <string name="lot_quantity_must_not_be_more_than_selected_lot_quantity">Lot quantity must not be more than selected lot quantity!</string>
     <string name="job_order_number">Job order number</string>
+    <string name="please_enter_receipt_number_first">Please enter receipt number first!</string>
 </resources>

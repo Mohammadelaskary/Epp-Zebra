@@ -224,7 +224,7 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
         binding.itemDescription.text = moveOrderLine.inventorYITEMDESC
         binding.allocatedQty.text = moveOrderLine.allocatedQUANTITY.toString()
         binding.subInventoryFrom.text  = moveOrderLine.froMSUBINVENTORYCODE
-        binding.locator.text           = moveOrderLine.froMLOCATORID.toString()
+        binding.locator.text           = moveOrderLine.froMLOCATORCode
         binding.remainingQty.text = remainingQty.toString()
     }
 

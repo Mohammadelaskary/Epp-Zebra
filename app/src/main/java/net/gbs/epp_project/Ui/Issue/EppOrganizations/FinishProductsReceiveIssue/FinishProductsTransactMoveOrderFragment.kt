@@ -198,8 +198,10 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
         binding.moveOrderNumberSpinner.setOnItemClickListener { _, _, position, _ ->
             selectedMoveOrder = moveOrdersList[position]
             binding.info.isEnabled = false
-            viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
-            viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
+            if (moveOrdersList.isNotEmpty()) {
+                viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
+                viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
+            }
             binding.transactionDate?.editText?.setText(viewModel.getDisplayTodayDate())
             binding.itemCode.editText?.setText("")
             binding.onScanItemViewsGroup.visibility = GONE
@@ -230,6 +232,8 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
                         moveOrdersList.find { it.moveOrderRequestNumber == selectedMoveOrder?.moveOrderRequestNumber }
                     if (moveOrder != null) {
                         refillMoveOrderData()
+                    } else {
+                        binding.moveOrderNumberSpinner.setText("",false)
                     }
                 }
             } else {
@@ -475,9 +479,9 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
     private fun fillItemData(scannedItem: MoveOrderLine) {
         if (getEditTextText(binding.itemCode).isEmpty())
             binding.itemCode.editText?.setText(scannedItem.inventorYITEMCODE)
-        binding.itemDesc.text = scannedItem.inventorYITEMDESC
-        binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
-        binding.onScanItemViewsGroup.visibility = VISIBLE
+            binding.itemDesc.text = scannedItem.inventorYITEMDESC
+            binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
+            binding.onScanItemViewsGroup.visibility = VISIBLE
         if (source== ISSUE_FINAL_PRODUCT||source== RECEIVE_FINAL_PRODUCT){
             binding.transact.visibility = GONE
         } else {

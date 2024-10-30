@@ -59,7 +59,7 @@ class IssueRepository(activity: Activity) : BaseRepository(activity = activity) 
         userId!!,
         deviceSerialNo,
         lang,
-        orgId = orgId,
+        orgId = orgId
     )
     suspend fun getMoveOrdersList_FinishProduct(
         orgId:Int

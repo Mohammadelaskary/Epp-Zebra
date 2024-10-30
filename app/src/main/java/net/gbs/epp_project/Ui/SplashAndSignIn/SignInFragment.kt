@@ -1,6 +1,7 @@
 package net.gbs.epp_project.Ui.SplashAndSignIn
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -126,13 +127,31 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
         }
         viewModel.signInLiveData.observe(requireActivity()){
             USER = it
-            if(FormatDateTime.compareTwoTimes(it.serverDateTime!!,viewModel.getDeviceTodayDate())){
-                navController.navigate(R.id.action_signInFragment_to_mainMenuFragment)
-                showSuccessAlerter(getString(R.string.you_logged_in_successfully),requireActivity())
-            } else {
-                warningDialog(requireContext(),
-                    getString(R.string.device_date_or_time_or_both_not_correct_please_correct_device_date_and_time_and_try_to_sign_in_again)+"\n"+ getString(
-                        R.string.correct_date_time_is)+"\n${FormatDateTime(it.serverDateTime!!).year()}-${FormatDateTime(it.serverDateTime!!).month()}-${FormatDateTime(it.serverDateTime!!).day()} ${FormatDateTime(it.serverDateTime!!).hours()}:${FormatDateTime(it.serverDateTime!!).minutes()}")
+            try {
+                if (FormatDateTime.compareTwoTimes(
+                        it.serverDateTime!!.replace("T", " ").substring(0, 19),
+                        viewModel.getDeviceTodayDate()
+                    )
+                ) {
+                    navController.navigate(R.id.action_signInFragment_to_mainMenuFragment)
+                    showSuccessAlerter(
+                        getString(R.string.you_logged_in_successfully),
+                        requireActivity()
+                    )
+                } else {
+                    warningDialog(
+                        requireContext(),
+                        getString(R.string.device_date_or_time_or_both_not_correct_please_correct_device_date_and_time_and_try_to_sign_in_again) + "\n" + getString(
+                            R.string.correct_date_time_is
+                        ) + "\n${FormatDateTime(it.serverDateTime!!.replace("T", " ").substring(0, 19)).year()}-${FormatDateTime(it.serverDateTime!!.replace("T", " ").substring(0, 19)).month()}-${
+                            FormatDateTime(
+                                it.serverDateTime!!.replace("T", " ").substring(0, 19)
+                            ).day()
+                        } ${FormatDateTime(it.serverDateTime!!.replace("T", " ").substring(0, 19)).hours()}:${FormatDateTime(it.serverDateTime!!.replace("T", " ").substring(0, 19)).minutes()}"
+                    )
+                }
+            } catch (ex:Exception){
+                Log.d(TAG, "observeSignIn: ${ex.message}")
             }
             LocalStorage(requireActivity()).setStoredActualDate(USER?.serverDateTime!!.substring(0,10))
             try {

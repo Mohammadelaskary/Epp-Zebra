@@ -9,6 +9,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.lifecycle.MutableLiveData
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
@@ -517,11 +518,12 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             isReady = false
             binding.transferQty.error = getString(R.string.please_enter_qty)
         } else {
+            val selectedItemData = itemData.find { it.subinventory == selectedLocatorCodeFrom && it.locator == selectedLocatorCodeFrom }
             try{
-                if (qty.toDouble()>itemData[0].onhand!!){
+                if (qty.toDouble()>selectedItemData?.onhand!!){
                     isReady = false
                     binding.transferQty.error =
-                        getString(R.string.transfer_quantity_must_be_less_than_or_equal_to)+itemData[0].onhand!!
+                        getString(R.string.transfer_quantity_must_be_less_than_or_equal_to)+selectedItemData.onhand
                 }
             } catch (ex:Exception){
                 isReady = false
@@ -535,4 +537,6 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         val scannedText = data
         onBarcodeReadData(scannedText)
     }
+
+
 }

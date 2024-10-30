@@ -174,8 +174,10 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         binding.workOrderNumberSpinner?.setOnItemClickListener { _, _, position, _ ->
             selectedMoveOrder = workOrdersList[position]
             binding.info.isEnabled = false
-            viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
-            viewModel.getMoveOrderLines(selectedMoveOrder?.workOrderName!!, orgId)
+            if (workOrdersList.isNotEmpty()) {
+                viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
+                viewModel.getMoveOrderLines(selectedMoveOrder?.workOrderName!!, orgId)
+            }
             binding.itemCode.editText?.setText("")
             binding.onScanItemViewsGroup.visibility = GONE
         }
@@ -207,7 +209,9 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
                         workOrdersList.find { it.workOrderName == selectedMoveOrder?.workOrderName }
                     if (workOrder != null) {
                         refillMoveOrderData()
-                    }
+                    } else {
+                    binding.workOrderNumberSpinner.setText("",false)
+                }
                 }
             } else {
                 back(this)
@@ -396,14 +400,12 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         when(source){
             SPARE_PARTS -> {
                 viewModel.getWorkOrdersList(orgId)
-                binding.workOrderNumber.hint = getString(R.string.work_order_number)
                 binding.subInventoryTo.visibility = GONE
                 binding.line.visibility = GONE
                 binding.transact.text = getString(R.string.issue)
             }
             INDIRECT_CHEMICALS -> {
                 viewModel.getJobOrdersList(orgId)
-                binding.workOrderNumber.hint = getString(R.string.job_order_number)
             }
         }
 

@@ -74,11 +74,11 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:enabled="false"
                 android:imeOptions="actionNext"
                 android:inputType="none"
                 android:lines="1"
                 android:maxLines="1"
-                android:enabled="false"
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,6 +101,30 @@
             app:layout_constraintTop_toTopOf="@+id/return_date" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/receipt_no"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/receipt_no"
+            app:layout_constraintEnd_toEndOf="@+id/item_code"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/return_date"
+            app:layout_constraintVertical_chainStyle="packed">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/item_code"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -111,7 +135,7 @@
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/return_date"
+            app:layout_constraintTop_toBottomOf="@+id/receipt_no"
             app:startIconDrawable="@drawable/ic_barcode_icon">
 
             <com.google.android.material.textfield.TextInputEditText

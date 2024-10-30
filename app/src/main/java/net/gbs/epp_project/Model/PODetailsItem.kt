@@ -22,9 +22,12 @@ data class PODetailsItem(
     @SerializedName("itemqtybilled"           ) var itemqtybilled        : Int?    = null,
     @SerializedName("itemqtycancelled"        ) var itemqtycancelled     : Int?    = null,
     @SerializedName("itemprice"               ) var itemprice            : Int?    = null,
-    @SerializedName("need_by_date"            ) var needByDate           : String? = null
+    @SerializedName("need_by_date"            ) var needByDate           : String? = null,
+    @SerializedName("loT_CONTROL_CODE"        ) var lotControlCode       : String? = null,
+    @SerializedName("loT_CONTROL_NAME"        ) var lotControlName       : String? = null,
 
 ) {
+    fun mustProvideLot():Boolean = lotControlCode == "2"
     private val re = Regex("[^A-Za-z0-9 ]")
     val itemDescription
         get() = re.replace(itemdesc as String,"")

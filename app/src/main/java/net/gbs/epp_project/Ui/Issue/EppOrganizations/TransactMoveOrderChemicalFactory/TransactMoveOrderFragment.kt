@@ -200,8 +200,11 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
         binding.moveOrderNumberSpinner.setOnItemClickListener { _, _, position, _ ->
             selectedMoveOrder = moveOrdersList[position]
             binding.info.isEnabled = false
-            viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
-            viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
+            if (moveOrdersList.isNotEmpty()){
+                viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
+                Log.d(TAG, "getMoveOrderLinesSetUpMoveOrdersNumbersSpinner: ")
+                viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
+            }
             binding.transactionDate?.editText?.setText(viewModel.getDisplayTodayDate())
             binding.itemCode.editText?.setText("")
             binding.onScanItemViewsGroup.visibility = GONE
@@ -227,11 +230,14 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
                 ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, moveOrdersList)
             binding.moveOrderNumberSpinner.setAdapter(moveOrdersAdapter)
             if (moveOrdersList.isNotEmpty()) {
+                Log.d(TAG, "getMoveOrderLinesObserveGettingMoveOrdersList: $selectedMoveOrder")
                 if (selectedMoveOrder != null) {
                     val moveOrder =
                         moveOrdersList.find { it.moveOrderRequestNumber == selectedMoveOrder?.moveOrderRequestNumber }
                     if (moveOrder != null) {
                         refillMoveOrderData()
+                    } else {
+                        binding.moveOrderNumberSpinner.setText("",false)
                     }
                 }
             } else {
@@ -243,6 +249,7 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun refillMoveOrderData() {
             binding.info.isEnabled = false
             viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
+        Log.d(TAG, "getMoveOrderLinesRefillMoveOrderData: ")
             viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
             binding.transactionDate?.editText?.setText(viewModel.getDisplayTodayDate())
             binding.itemCode.editText?.setText("")
@@ -290,6 +297,7 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
                     } catch (ex:Exception){
                         warningDialog(requireContext(),ex.message!!)
                     }
+                    Log.d(TAG, "getMoveOrderLinesObserveAllocatingTransactingItems: ")
                     viewModel.getMoveOrderLines(selectedMoveOrder?.moveOrderHeaderId!!, orgId)
 //                    back(this)
                     showSuccessAlerter(it.message, requireActivity())

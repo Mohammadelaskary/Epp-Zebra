@@ -67,14 +67,18 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 //        observeGettingDate()
         EditTextActionHandler.OnEnterKeyPressed(binding.itemCode){
             val itemCode = getEditTextText(binding.itemCode)
-            scannedItem = poItemsList.find { it.itemcode == itemCode }
-            if (scannedItem!=null){
-                binding.itemDataGroup.visibility = VISIBLE
-                fillItemData()
+            if (getEditTextText(binding.receiptNo).isNotEmpty()) {
+                scannedItem = poItemsList.find { it.itemcode == itemCode }
+                if (scannedItem != null) {
+                    binding.itemDataGroup.visibility = VISIBLE
+                    fillItemData()
+                } else {
+                    binding.itemDataGroup.visibility = GONE
+                    binding.itemCode.error =
+                        getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
+                }
             } else {
-                binding.itemDataGroup.visibility = GONE
-                binding.itemCode.error =
-                    getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
+                warningDialog(requireContext(), getString(R.string.please_enter_receipt_number_first))
             }
         }
     }
@@ -298,14 +302,18 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 
     override fun onDataScanned(data: String) {
         val scannedText = data
-        scannedItem = poItemsList.find { it.itemcode == scannedText }
-        if (scannedItem!=null){
-            binding.itemDataGroup.visibility = VISIBLE
-            fillItemData()
+        if (getEditTextText(binding.receiptNo).isNotEmpty()) {
+            scannedItem = poItemsList.find { it.itemcode == scannedText && it.receiptno== getEditTextText(binding.receiptNo) }
+            if (scannedItem != null) {
+                binding.itemDataGroup.visibility = VISIBLE
+                fillItemData()
+            } else {
+                binding.itemDataGroup.visibility = GONE
+                binding.itemCode.error =
+                    getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
+            }
         } else {
-            binding.itemDataGroup.visibility = GONE
-            binding.itemCode.error =
-                getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
+            warningDialog(requireContext(), getString(R.string.please_enter_receipt_number_first))
         }
     }
 

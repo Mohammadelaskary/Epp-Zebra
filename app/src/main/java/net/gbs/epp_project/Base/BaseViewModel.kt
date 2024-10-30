@@ -2,15 +2,20 @@ package net.gbs.epp_project.Base
 
 import android.app.Activity
 import android.app.Application
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
 import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.Job
+import net.gbs.epp_project.Tools.FormatDateTime
 import net.gbs.epp_project.Tools.LocaleHelper
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 open class BaseViewModel (application: Application,activity: Activity): AndroidViewModel(application) {
     var job: Job? = null
@@ -50,7 +55,9 @@ open class BaseViewModel (application: Application,activity: Activity): AndroidV
     }
 
     fun getDeviceTodayDate():String{
-        val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-        return sdf.format(Date())+".00"
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = FormatDateTime(sdf.format(Date()))
+        Log.d(TAG, "getDeviceTodayDate: ${date.year()}-${date.month()}-${date.day()} ${date.hours()}:${date.minutes()}:00")
+        return "${date.year()}-${date.month()}-${date.day()} ${date.hours()}:${date.minutes()}:00"
     }
 }

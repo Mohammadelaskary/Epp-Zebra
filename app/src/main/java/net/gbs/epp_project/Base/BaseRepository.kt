@@ -10,6 +10,7 @@ import net.gbs.epp_project.MainActivity.MainActivity.Companion.setBaseUrl
 import net.gbs.epp_project.Network.ApiFactory.ApiFactory
 import net.gbs.epp_project.Network.ApiInterface.ApiInterface
 import net.gbs.epp_project.Tools.CommunicationData
+import net.gbs.epp_project.Tools.FormatDateTime
 import net.gbs.epp_project.Tools.LocaleHelper
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 import java.text.SimpleDateFormat
@@ -60,8 +61,9 @@ open class BaseRepository(val activity: Activity?) {
     fun setStoredActualDate(date:String) = localStorage.setStoredActualDate(date)
 
     fun getTodayDate():String{
-        val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-        val date = "${sdf.format(Date()).substring(0,10)}T${sdf.format(Date()).substring(11,19)}.00"
-        return date
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = FormatDateTime(sdf.format(Date()))
+        Log.d(TAG, "getTodayDate: ${date.year()}-${date.month()}-${date.day()} ${date.hours()}:${date.minutes()}:00")
+        return "${date.year()}-${date.month()}-${date.day()}T${date.hours()}:${date.minutes()}:00.00"
     }
 }

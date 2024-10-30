@@ -51,7 +51,6 @@ class TransactMoveOrderViewModel(private val application: Application,val activi
     val getMoveOrderLinesLiveData = SingleLiveEvent<List<MoveOrderLine>>()
     val getMoveOrderLinesStatus   = SingleLiveEvent<StatusWithMessage>()
     fun getMoveOrderLines(headerId:Int,orgId:Int){
-        Log.d(TAG, "MOVE_ORDERS_LINEgetMoveOrderLines: ")
         job = CoroutineScope(Dispatchers.IO).launch {
             getMoveOrderLinesStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
