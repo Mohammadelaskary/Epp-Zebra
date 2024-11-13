@@ -35,6 +35,7 @@ import net.gbs.epp_project.Ui.Receiving.EppOrganizations.PutAway.StartPutAway.St
 import net.gbs.epp_project.Ui.Receiving.EppOrganizations.Receive.ReceivePO.ReceivePOViewModel
 import net.gbs.epp_project.Ui.Receiving.EppOrganizations.Receive.StartReceiving.StartReceiveViewModel
 import net.gbs.epp_project.Ui.Return.ReturnMenu.ReturnMenuViewModel
+import net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen.AddItemScreenViewModel
 import net.gbs.epp_project.Ui.Return.ReturnToVendor.ReturnToVendorViewModel
 import net.gbs.epp_project.Ui.Return.ReturnToWarehouse.ReturnToWarehouseViewModel
 import net.gbs.epp_project.Ui.Return.ReturnToWarehouse.StartReturn.StartReturnViewModel
@@ -122,6 +123,8 @@ class BaseViewModelFactory (val application: Application,val activity: Activity)
             return AddNewTruckViewModel(activity,application) as T
         else if (modelClass.isAssignableFrom(RejectionPutAwayViewModel::class.java))
             return RejectionPutAwayViewModel(application,activity) as T
+        else if (modelClass.isAssignableFrom(AddItemScreenViewModel::class.java))
+            return AddItemScreenViewModel(application,activity) as T
         throw IllegalArgumentException("View model not found")
     }
 }

@@ -5,6 +5,7 @@ package net.gbs.epp_project.Network.ApiInterface
 import net.gbs.epp_project.Model.ApiRequestBody.AllocateItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.InspectMaterialBody
 import net.gbs.epp_project.Model.ApiRequestBody.ItemsReceivingBody
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.PhysicalInventory_CountBody
 import net.gbs.epp_project.Model.ApiRequestBody.PutawayMaterialBody
 import net.gbs.epp_project.Model.ApiRequestBody.ReturnMaterialBody
@@ -119,6 +120,9 @@ interface ApiInterface {
     ):Response<GetPhysicalInventoryOrderCounting_TransactionsResponse>
     @POST("PhysicalInventory_Count")
     suspend fun PhysicalInventory_Count(@Body body: PhysicalInventory_CountBody):Response<PhysicalInventory_CountResponse>
+
+    @POST("MobileLog")
+    suspend fun MobileLog(@Body body: MobileLogBody):Response<NoDataResponse>
     @GET("PhysicalInventoryOrder_FinishTracking")
     suspend fun finishTracking(
         @Query("UserID") UserID: String,

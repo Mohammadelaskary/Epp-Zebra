@@ -479,10 +479,10 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
     private fun fillItemData(scannedItem: MoveOrderLine) {
         if (getEditTextText(binding.itemCode).isEmpty())
             binding.itemCode.editText?.setText(scannedItem.inventorYITEMCODE)
-            binding.itemDesc.text = scannedItem.inventorYITEMDESC
-            binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
-            binding.onScanItemViewsGroup.visibility = VISIBLE
-        if (source== ISSUE_FINAL_PRODUCT||source== RECEIVE_FINAL_PRODUCT){
+        binding.itemDesc.text = scannedItem.inventorYITEMDESC
+        binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
+        binding.onScanItemViewsGroup.visibility = VISIBLE
+        if (source == ISSUE_FINAL_PRODUCT || source == RECEIVE_FINAL_PRODUCT) {
             binding.transact.visibility = GONE
         } else {
             binding.transact.visibility = VISIBLE
@@ -502,6 +502,14 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
 
         val allocatedQty = scannedItem.quantity.toString()
         binding.allocatedQty.editText?.setText(allocatedQty)
+
+        if(scannedItem.mustHaveLot()){
+            binding.transact.visibility = GONE
+            binding.lotSerial.visibility = VISIBLE
+        }else{
+            binding.transact.visibility = VISIBLE
+            binding.lotSerial.visibility = GONE
+        }
 
     }
 
@@ -589,12 +597,7 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
             binding.subInventoryFrom.error = getString(R.string.please_select_from_sub_inventory)
             isReady = false
         }
-        //        else {
-//            if (!containsOnlyDigits(issueQty)){
-//                binding.issueQty.error = getString(R.string.please_enter_valid_qty)
-//                isReady = false
-//            }
-//        }
+
         return isReady
     }
     private fun isReadyForTransaction():Boolean{
@@ -604,22 +607,12 @@ class FinishProductsTransactMoveOrderFragment : BaseFragmentWithViewModel<Transa
             isReady = false
         }
 
-//        else {
-//            if (!containsOnlyDigits(issueQty)){
-//                binding.issueQty.error = getString(R.string.please_enter_valid_qty)
-//                isReady = false
-//            }
-//        }
+
         if (selectedSubInventoryCodeTo==null){
             binding.subInventoryTo.error = getString(R.string.please_select_to_sub_inventory)
             isReady = false
         }
-//        if (source!= FINAL_PRODUCT) {
-//            if (selectedLocatorCodeFrom == null) {
-//                binding.locatorFrom.error = getString(R.string.please_select_from_locator)
-//                isReady = false
-//            }
-//        }
+
         return isReady
     }
 

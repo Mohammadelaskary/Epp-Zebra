@@ -31,7 +31,11 @@ data class PODetailsItem2 (
     @SerializedName("isinspected"             ) var isinspected           : String? = null,
     @SerializedName("isdelivered"             ) var isdelivered: String? = null,
     @SerializedName("is_rejected_delivered"             ) var isRejectedDelivered: String? = null,
+    @SerializedName("loT_CONTROL_CODE"        ) var loTCONTROLCODE        : String? = null,
+    @SerializedName("loT_CONTROL_NAME"        ) var loTCONTROLNAME        : String? = null,
 ){
+
+    fun mustHaveLot():Boolean = loTCONTROLCODE=="2"
     companion object{
         fun toJson (poDetailsItem2: PODetailsItem2):String{
             return Gson().toJson(poDetailsItem2)

@@ -83,26 +83,11 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
 
             RECEIVE_FINAL_PRODUCT, ISSUE_FINAL_PRODUCT -> {
                 binding.moveOrderNumber.hint = getString(R.string.sales_order_number)
-                binding.transact.visibility = GONE
             }
 
         }
 
 
-//        binding.issueTypeGroup.setOnCheckedChangeListener { radioGroup, id ->
-//            when(id){
-//                R.id.allocate_only -> {
-//                    binding.allocateGroup.visibility = VISIBLE
-//                    binding.transact.visibility = GONE
-//                    binding.lotSerial.visibility = GONE
-//                }
-//                R.id.transact_only ->{
-//                    binding.allocateGroup.visibility = GONE
-//                    binding.transact.visibility = VISIBLE
-//                    binding.lotSerial.visibility = VISIBLE
-//                }
-//            }
-//        }
 
         Tools.changeFragmentTitle(source!!, requireActivity())
         clearInputLayoutError(binding.moveOrderNumber, binding.subInventoryTo, binding.itemCode)
@@ -526,11 +511,7 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
         binding.itemDesc.text = scannedItem.inventorYITEMDESC
         binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
         binding.onScanItemViewsGroup.visibility = VISIBLE
-//        if (source== ISSUE_FINAL_PRODUCT||source== RECEIVE_FINAL_PRODUCT){
-//            binding.transact.visibility = GONE
-//        } else {
-//            binding.transact.visibility = VISIBLE
-//        }
+
         if (scannedItem.froMSUBINVENTORYCODE?.isNotEmpty()!!) {
             binding.subInventoryFromSpinner.setText(scannedItem.froMSUBINVENTORYCODE, false)
             binding.subInventoryFrom.isEnabled = false
@@ -551,24 +532,17 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
         val allocatedQty = scannedItem.quantity.toString()
         binding.allocatedQty.editText?.setText(allocatedQty)
 
+        if(scannedItem.mustHaveLot()){
+            binding.transact.visibility = GONE
+            binding.lotSerial.visibility = VISIBLE
+        }else{
+            binding.transact.visibility = VISIBLE
+            binding.lotSerial.visibility = GONE
+        }
+
     }
 
 
-//        if (source.equals(INDIRECT_CHEMICALS)){
-////            binding.issueTypeGroup.visibility = GONE
-////            binding.allocateGroup.visibility = GONE
-//            binding.transact.visibility = VISIBLE
-//            binding.lotSerial.visibility = VISIBLE
-//        } else {
-//            binding.issueTypeGroup.visibility = VISIBLE
-//            binding.transact.visibility = GONE
-//            binding.lotSerial.visibility = GONE
-//        }
-
-//
-//    override fun onStatus(statusData: StatusData) {
-//       barcodeReader.onStatus(statusData)
-//    }
 
     override fun onClick(v: View?) {
         when(v?.id){
@@ -612,7 +586,8 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
                     orgId = orgId,
                     lineId = scannedItem?.linEID,
                     lineNumber = scannedItem?.linENUMBER,
-                    transaction_date = viewModel.getTodayDate()
+                    transaction_date = viewModel.getTodayDate(),
+                    isFinalProducts = false
                 )
                 viewModel.transactItems(body)
                 Log.d(TAG, "onClick: Transact")

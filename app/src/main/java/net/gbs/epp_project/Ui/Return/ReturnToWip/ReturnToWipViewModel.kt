@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.OnHandItemLot
 import net.gbs.epp_project.Model.Status
@@ -16,6 +17,7 @@ import net.gbs.epp_project.Repositories.IssueRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 
 class ReturnToWipViewModel(private val application: Application, activity: Activity) : BaseViewModel(application, activity) {
@@ -31,7 +33,15 @@ class ReturnToWipViewModel(private val application: Application, activity: Activ
             getSubInvertoryListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = repository.getSubInventoryList(orgId)
-                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData()
+                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData("SubInvList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "SubInvList"
+                        )
+                    )
             } catch (ex:Exception){
                 getSubInvertoryListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -46,7 +56,15 @@ class ReturnToWipViewModel(private val application: Application, activity: Activ
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.transferMaterial(body)
-                ResponseHandler(response,transferMaterialStatus,application).handleData()
+                ResponseHandler(response,transferMaterialStatus,application).handleData("TransferMaterial")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "TransferMaterial"
+                        )
+                    )
             } catch (ex:Exception){
                 transferMaterialStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(R.string.error_in_connection)))
             }
@@ -59,7 +77,15 @@ class ReturnToWipViewModel(private val application: Application, activity: Activ
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.getItemLotInfo(itemCode,orgId)
-                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData()
+                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData("OnHand_Lot")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OnHand_Lot"
+                        )
+                    )
             } catch (ex:Exception){
                 getItemsListStatus.postValue(
                     StatusWithMessage(

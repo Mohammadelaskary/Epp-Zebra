@@ -237,15 +237,25 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
         binding.date.text = poDetailsItem.receiptdate?.substring(0,10)
         binding.itemCode.editText?.setText(poDetailsItem.itemcode)
         binding.itemDescription.text = poDetailsItem.itemdesc
-        if (!isRejected)
-            binding.qty.editText?.setText(poDetailsItem.itemqtyAccepted.toString())
-        else
-            binding.qty.editText?.setText(poDetailsItem.itemqtyRejected.toString())
+
+
         binding.poQty.text = poDetailsItem.poLineQty.toString()
-        if (!isRejected)
+        if (!isRejected) {
+            binding.qty.editText?.setText(poDetailsItem.itemqtyAccepted.toString())
             binding.putAwayQty.text = poDetailsItem.itemqtyAccepted.toString()
-        else
+            binding.locator.visibility = VISIBLE
+            if (poDetailsItem.mustHaveLot()){
+                binding.lotSerial.visibility = VISIBLE
+            } else {
+                binding.lotSerial.visibility = GONE
+            }
+        } else {
+            binding.qty.editText?.setText(poDetailsItem.itemqtyRejected.toString())
             binding.putAwayQty.text = poDetailsItem.itemqtyRejected.toString()
+            binding.locator.visibility = GONE
+            binding.lotSerial.visibility = GONE
+        }
+
     }
 
 
@@ -323,6 +333,12 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
             if (selectedLocator == null) {
                 binding.locator.error = getString(R.string.please_scan_locator_code)
                 isReady = false
+            }
+            if (poDetailsItem.mustHaveLot()){
+                if (selectedLot==null){
+                    binding.lotSerial.error = getString(R.string.please_select_lot)
+                    isReady = false
+                }
             }
         }
 

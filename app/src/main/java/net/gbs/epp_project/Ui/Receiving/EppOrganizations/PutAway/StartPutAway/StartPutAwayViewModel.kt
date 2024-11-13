@@ -6,8 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.Locator
-import net.gbs.epp_project.Model.LocatorAudit
 import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
@@ -17,6 +17,8 @@ import net.gbs.epp_project.Repositories.ReceivingRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class StartPutAwayViewModel(private val app:Application,val activity: Activity) : BaseViewModel(app,activity) {
     val receivingRepository = ReceivingRepository(activity)
@@ -50,7 +52,15 @@ class StartPutAwayViewModel(private val app:Application,val activity: Activity) 
                     lotNum = lot_num,
                     isRejected = isRejected
                 )
-                ResponseHandler(response,putAwayStatus,app).handleData()
+                ResponseHandler(response,putAwayStatus,app).handleData("PutawayMaterial")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = SignInFragment.USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PutawayMaterial"
+                        )
+                    )
             } catch (ex:Exception){
                 putAwayStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,activity.getString(R.string.error_in_connection)))
             }
@@ -66,7 +76,15 @@ class StartPutAwayViewModel(private val app:Application,val activity: Activity) 
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = receivingRepository.getSubInventoryList(org_id)
-                ResponseDataHandler(response,getSubinventoryListLiveData,getSubinventoryListStatus,app).handleData()
+                ResponseDataHandler(response,getSubinventoryListLiveData,getSubinventoryListStatus,app).handleData("SubInvList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "SubInvList"
+                        )
+                    )
             } catch (ex:Exception){
                 getSubinventoryListStatus.postValue(StatusWithMessage(Status.ERROR,app.getString(R.string.error_in_getting_data)))
             }
@@ -76,7 +94,15 @@ class StartPutAwayViewModel(private val app:Application,val activity: Activity) 
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = receivingRepository.getLocatorList(org_id,subInventoryCode)
-                ResponseDataHandler(response,getLocatorListLiveData,getLocatorListStatus,app).handleData()
+                ResponseDataHandler(response,getLocatorListLiveData,getLocatorListStatus,app).handleData("LocatorList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "LocatorList"
+                        )
+                    )
             } catch (ex:Exception){
                 getSubinventoryListStatus.postValue(StatusWithMessage(Status.ERROR,app.getString(R.string.error_in_getting_data)))
             }
@@ -89,7 +115,15 @@ class StartPutAwayViewModel(private val app:Application,val activity: Activity) 
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = receivingRepository.getLotList(orgId.toString(),itemId,subInvCode)
-                ResponseDataHandler(response,getLotListLiveData,getLotListStatus,app).handleData()
+                ResponseDataHandler(response,getLotListLiveData,getLotListStatus,app).handleData("LotList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "LotList"
+                        )
+                    )
             } catch (ex:Exception){
                 getLotListStatus.postValue(StatusWithMessage(Status.ERROR,app.getString(R.string.error_in_getting_data)))
             }

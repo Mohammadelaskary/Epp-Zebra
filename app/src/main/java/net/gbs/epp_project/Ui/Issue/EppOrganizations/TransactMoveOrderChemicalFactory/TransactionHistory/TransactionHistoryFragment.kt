@@ -11,9 +11,11 @@ import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.FACTORY
 import net.gbs.epp_project.Base.BundleKeys.FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
+import net.gbs.epp_project.Base.BundleKeys.ISSUE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.MOVE_ORDER_LINE_KEY
 import net.gbs.epp_project.Base.BundleKeys.MOVE_ORDER_NUMBER_KEY
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
+import net.gbs.epp_project.Base.BundleKeys.RECEIVE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
 import net.gbs.epp_project.Model.Lot
@@ -29,8 +31,9 @@ import net.gbs.epp_project.Tools.Tools.getEditTextText
 import net.gbs.epp_project.Tools.Tools.showSuccessAlerter
 import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.databinding.FragmentTransactionHistoryBinding
+import kotlin.math.log
 
-class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryViewModel,FragmentTransactionHistoryBinding>() {
+class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryViewModel, FragmentTransactionHistoryBinding>() {
 
     companion object {
         fun newInstance() = TransactionHistoryFragment()
@@ -49,9 +52,10 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
         moveOrderNumber = arguments?.getString(MOVE_ORDER_NUMBER_KEY)!!
         orgId           = arguments?.getInt(ORGANIZATION_ID_KEY)!!
         source          = arguments?.getString(SOURCE_KEY)
+        Log.d(TAG, "onViewCreated: $source")
         remainingQty    = moveOrderLine.allocatedQUANTITY!!
         when(source) {
-            FACTORY, FINAL_PRODUCT -> binding.moveOrderNumberLabel.text = getString(R.string.move_order_number)
+            FACTORY, RECEIVE_FINAL_PRODUCT, ISSUE_FINAL_PRODUCT -> binding.moveOrderNumberLabel.text = getString(R.string.move_order_number)
             INDIRECT_CHEMICALS     -> binding.moveOrderNumberLabel.text = getString(R.string.work_order_number)
         }
         fillMoveOrderLineData()
@@ -70,7 +74,8 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
                             lineId = moveOrderLine.linEID,
                             lineNumber = moveOrderLine.linENUMBER,
                             lots = lotQtyList,
-                            transaction_date = viewModel.getTodayFullDate()
+                            transaction_date = viewModel.getTodayFullDate(),
+                            isFinalProducts = source == RECEIVE_FINAL_PRODUCT || source == ISSUE_FINAL_PRODUCT
                         )
                     )
                 } else {
@@ -147,17 +152,7 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
     private var selectedLot: Lot? = null
     private fun setUpLotSpinner() {
         binding.lotNumberSpinner.setOnItemClickListener { _, _, selectedPosition, _ ->
-//            val qtyText = getEditTextText(binding.lotQty)
-//            if (validQty(qtyText)){
-//                val lotQty = LotQty(
-//                    lotName = lotList[selectedPosition].lotName,
-//                    qty     = qtyText.toDouble()
-//                )
-//                lotQtyList.add(lotQty)
-//                remainingQty=remainingQty-qtyText.toDouble()
-//                binding.lotQty.editText?.setText(remainingQty.toString())
-//                Log.d(TAG, "setUpLotSpinner: $remainingQty")
-//                lotQtyAdapter.notifyDataSetChanged()
+
                 selectedLot = lotList[selectedPosition]
                 binding.lotQty.editText?.setText("$remainingQty")
         }

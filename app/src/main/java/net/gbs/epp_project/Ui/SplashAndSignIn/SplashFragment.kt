@@ -61,8 +61,11 @@ class SplashFragment : Fragment(),ChangeSettingsDialog.OnButtonsClicked {
                         communicationData.getIpAddress(),
                         communicationData.getPortNumber()
                     )
-                } else changeSettingsDialog.show()
-        }, 2000)    }
+                }
+                else changeSettingsDialog.show()
+        }, 2000)
+//        navController.navigate(R.id.action_splashFragment_to_signInFragment)
+    }
 
     private lateinit var binding: FragmentSplashBinding
     override fun onCreateView(

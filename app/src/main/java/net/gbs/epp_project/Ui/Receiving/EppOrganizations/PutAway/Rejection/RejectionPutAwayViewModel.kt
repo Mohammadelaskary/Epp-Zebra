@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.PODetailsItem2
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
@@ -13,6 +14,7 @@ import net.gbs.epp_project.R
 import net.gbs.epp_project.Repositories.ReceivingRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 
 class RejectionPutAwayViewModel(private val app:Application, val activity: Activity) : BaseViewModel(application = app,activity) {
    val receivingRepository = ReceivingRepository(activity)
@@ -29,7 +31,15 @@ class RejectionPutAwayViewModel(private val app:Application, val activity: Activ
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = receivingRepository.getPurchaseOrderReceiptNoList(poNum, receiptNo)
-                ResponseDataHandler(response,poDetailsItemsLiveData,poDetailsItemsStatus,app).handleData()
+                ResponseDataHandler(response,poDetailsItemsLiveData,poDetailsItemsStatus,app).handleData("PurchaseOrderReceiptNoList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = SignInFragment.USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderReceiptNoList"
+                        )
+                    )
             } catch (ex:Exception){
                 poDetailsItemsStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,activity.getString(R.string.error_in_connection)))
             }

@@ -72,21 +72,6 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
 
 
 
-//        binding.issueTypeGroup.setOnCheckedChangeListener { radioGroup, id ->
-//            when(id){
-//                R.id.allocate_only -> {
-//                    binding.allocateGroup.visibility = VISIBLE
-//                    binding.transact.visibility = GONE
-//                    binding.lotSerial.visibility = GONE
-//                }
-//                R.id.transact_only ->{
-//                    binding.allocateGroup.visibility = GONE
-//                    binding.transact.visibility = VISIBLE
-//                    binding.lotSerial.visibility = VISIBLE
-//                }
-//            }
-//        }
-
 
 
 
@@ -480,37 +465,21 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         }
         binding.locatorFromSpinner.setText(locatorFrom, false)
         val allocatedQty = scannedItem.quantity.toString()
-//        if (allocatedQty.isNotEmpty()) {
-//            binding.allocatedQty.isEnabled = false
+
         Log.d(TAG, "fillItemData: $source")
             binding.allocatedQty.editText?.setText(allocatedQty)
-            if (source == INDIRECT_CHEMICALS) {
-                binding.lotSerial.visibility = VISIBLE
-                binding.transact.visibility = GONE
-            } else {
-                binding.lotSerial.visibility = GONE
-                binding.transact.visibility = VISIBLE
-            }
-//        }
+
+                if(scannedItem.mustHaveLot()){
+                    binding.transact.visibility = GONE
+                    binding.lotSerial.visibility = VISIBLE
+                }else{
+                    binding.transact.visibility = VISIBLE
+                    binding.lotSerial.visibility = GONE
+                }
+
 
     }
 
-
-//        if (source.equals(INDIRECT_CHEMICALS)){
-////            binding.issueTypeGroup.visibility = GONE
-////            binding.allocateGroup.visibility = GONE
-//            binding.transact.visibility = VISIBLE
-//            binding.lotSerial.visibility = VISIBLE
-//        } else {
-//            binding.issueTypeGroup.visibility = VISIBLE
-//            binding.transact.visibility = GONE
-//            binding.lotSerial.visibility = GONE
-//        }
-
-
-//    override fun onStatus(statusData: StatusData) {
-//       barcodeReader.onStatus(statusData)
-//    }
 
     override fun onClick(v: View?) {
         when(v?.id){
@@ -520,7 +489,8 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
                     orgId = orgId,
                     lineId = scannedItem?.linEID,
                     lineNumber = scannedItem?.linENUMBER,
-                    transaction_date = viewModel.getTodayDate()
+                    transaction_date = viewModel.getTodayDate(),
+                    isFinalProducts = false
                 )
                 viewModel.transactItems(body)
                 Log.d(TAG, "onClick: Transact")

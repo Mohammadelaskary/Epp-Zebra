@@ -6,12 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Repositories.AuditRepository
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import java.lang.Exception
 
 class StartFinishTrackingViewModel(private val application: Application,val activity: Activity) : BaseViewModel(application,activity) {
@@ -23,7 +25,15 @@ class StartFinishTrackingViewModel(private val application: Application,val acti
             job = CoroutineScope(Dispatchers.IO).launch {
                 try{
                     val response = auditRepository.finishTracking(subInventoryCode,headerId)
-                    ResponseHandler(response,finishTrackingStatus,application).handleData()
+                    ResponseHandler(response,finishTrackingStatus,application).handleData("PhysicalInventoryOrder_FinishTracking")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        auditRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "PhysicalInventoryOrder_FinishTracking"
+                            )
+                        )
                 } catch (ex:Exception){
                     finishTrackingStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                         R.string.error_in_sending_data)))

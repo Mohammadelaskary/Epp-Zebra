@@ -35,9 +35,9 @@ data class User(
     @SerializedName("normalizedEmail"     ) var normalizedEmail     : String?  = null,
     @SerializedName("emailConfirmed"      ) var emailConfirmed      : Boolean? = null,
     @SerializedName("phoneNumber"         ) var phoneNumber         : String?  = null,
-    @SerializedName("oracleUserId"        ) var userId                : Int?     = null,
-    @SerializedName("serverDateTime"      ) var serverDateTime      : String?  = "26-09-2024"
-
+    @SerializedName("oracleUserId"        ) var userId              : Int?     = null,
+    @SerializedName("serverDateTime"      ) var serverDateTime      : String?  = "26-09-2024",
+    @SerializedName("isShowErrorMessage"  ) var isShowErrorMessage  : Boolean? = null,
 ) {
     val manualEnter: Boolean
         get() = scanMode == 1

@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.PODetailsItem2
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
@@ -14,6 +15,7 @@ import net.gbs.epp_project.R
 import net.gbs.epp_project.Repositories.ReceivingRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class POsInfoViewModel(private val application: Application, activity: Activity) : BaseViewModel(application, activity) {
     val repository = ReceivingRepository(activity)
@@ -29,7 +31,15 @@ class POsInfoViewModel(private val application: Application, activity: Activity)
                     getItemInfoLiveData,
                     getItemInfoStatus,
                     application
-                ).handleData()
+                ).handleData("PurchaseOrderReceiptNoList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderReceiptNoList"
+                        )
+                    )
             }
         } catch (ex:Exception){
             getItemInfoStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
@@ -47,7 +57,15 @@ class POsInfoViewModel(private val application: Application, activity: Activity)
                     getItemInfoLiveData,
                     getItemInfoStatus,
                     application
-                ).handleData()
+                ).handleData("PurchaseOrderReceiptNoList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderReceiptNoList"
+                        )
+                    )
             }
         } catch (ex:Exception){
             getItemInfoStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(

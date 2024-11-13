@@ -5,7 +5,7 @@ import net.gbs.epp_project.Model.POLineReturn
 
 class ReturnMaterialBody (
     @SerializedName("po_header_id"           ) var poHeaderId           : Int?               = null,
-    @SerializedName("po_lines"               ) var poLines              : List<POLineReturn> = listOf(),
+    @SerializedName("po_lines"               ) var poLines              : ArrayList<POLineReturn> = arrayListOf(),
     @SerializedName("user_id"                ) var userId               : Int?               = null,
     @SerializedName("employee_id"            ) var employeeId           : Int?               = null,
     @SerializedName("program_application_id" ) var programApplicationId : Int?               = null,

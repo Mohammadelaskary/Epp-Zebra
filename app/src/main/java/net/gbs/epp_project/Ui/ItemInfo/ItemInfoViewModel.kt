@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.OnHandItemForAllocate
 import net.gbs.epp_project.Model.Organization
 import net.gbs.epp_project.Model.Status
@@ -16,6 +17,7 @@ import net.gbs.epp_project.R
 import net.gbs.epp_project.Repositories.SignInRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class ItemInfoViewModel(private val application: Application,activity: Activity) : BaseViewModel(application, activity) {
     private val repository = SignInRepository(activity)
@@ -26,7 +28,15 @@ class ItemInfoViewModel(private val application: Application,activity: Activity)
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.getOrganizations()
-                ResponseDataHandler(response,getOrganizationsListLiveData,getOrganizationsListStatus,application).handleData()
+                ResponseDataHandler(response,getOrganizationsListLiveData,getOrganizationsListStatus,application).handleData("OrganizationsList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OrganizationsList"
+                        )
+                    )
             } catch (ex:Exception){
                 getOrganizationsListStatus.postValue(
                     StatusWithMessage(
@@ -44,8 +54,15 @@ class ItemInfoViewModel(private val application: Application,activity: Activity)
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.getItemInfo(itemCode,orgId)
-                delay(200)
-                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData()
+                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData("OnHandForAllocate")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OnHandForAllocate"
+                        )
+                    )
             } catch (ex:Exception){
                 getItemsListStatus.postValue(
                     StatusWithMessage(

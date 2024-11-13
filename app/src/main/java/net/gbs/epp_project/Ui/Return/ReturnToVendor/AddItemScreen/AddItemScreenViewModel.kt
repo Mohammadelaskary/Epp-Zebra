@@ -1,4 +1,4 @@
-package net.gbs.epp_project.Ui.Audit.CycleCount.OnHand
+package net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen
 
 import android.app.Activity
 import android.app.Application
@@ -8,37 +8,39 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
 import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
-import net.gbs.epp_project.Model.ItemCompare
-import net.gbs.epp_project.Model.OnHandItem
+import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
 import net.gbs.epp_project.R
-import net.gbs.epp_project.Repositories.AuditRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.Return.ReturnRepository
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
-class OnHandViewModel(private val application: Application,val activity: Activity) : BaseViewModel(application, activity) {
-    private val repository = AuditRepository(activity)
-    val getOnHandsItemsLiveData = SingleLiveEvent<List<ItemCompare>>()
-    val getOnHandsItemsStatus   = SingleLiveEvent<StatusWithMessage>()
-    fun getOnHandsItems(headerId:Int,orgCode:String){
-        getOnHandsItemsStatus.postValue(StatusWithMessage(Status.LOADING))
+class AddItemScreenViewModel(private val application: Application,activity: Activity) : BaseViewModel(application, activity) {
+    val repository = ReturnRepository(activity)
+    val getLotListLiveData = SingleLiveEvent<List<Lot>>()
+    val getLotListStatus   = SingleLiveEvent<StatusWithMessage>()
+    fun getLotList(orgId:Int,itemId:Int?,subInvCode: String?){
         job = CoroutineScope(Dispatchers.IO).launch {
+            getLotListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
-                val response = repository.getOnHands(headerId,orgCode)
-                ResponseDataHandler(response,getOnHandsItemsLiveData,getOnHandsItemsStatus,application).handleData("GetCycleCountOrder_StockCompare")
+                val response = repository.getLotList(orgId.toString(),itemId,subInvCode)
+                ResponseDataHandler(response,getLotListLiveData,getLotListStatus,application).handleData("LotList")
                 if (response.body()?.responseStatus?.errorMessage!=null)
                     repository.MobileLog(
                         MobileLogBody(
                             userId = USER?.notOracleUserId,
                             errorMessage = response.body()?.responseStatus?.errorMessage,
-                            apiName = "GetCycleCountOrder_StockCompare"
+                            apiName = "LotList"
                         )
                     )
             } catch (ex:Exception){
-                getOnHandsItemsStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
-                    R.string.error_in_connection)))
+                getLotListStatus.postValue(
+                    StatusWithMessage(
+                        Status.NETWORK_FAIL,application.getString(
+                            R.string.error_in_getting_data))
+                )
             }
         }
     }

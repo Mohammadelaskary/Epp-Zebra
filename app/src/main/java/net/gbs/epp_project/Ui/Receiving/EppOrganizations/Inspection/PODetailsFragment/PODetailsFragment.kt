@@ -10,7 +10,6 @@ import com.google.gson.Gson
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.PURCHASE_ORDER_KEY
 import net.gbs.epp_project.Model.Organization
-import net.gbs.epp_project.Model.OrganizationAudit
 import net.gbs.epp_project.Model.PODetailsItem
 import net.gbs.epp_project.Model.PurchaseOrder
 import net.gbs.epp_project.Model.Status
@@ -49,6 +48,7 @@ class PODetailsFragment :
 
         setUpRecyclerView()
         viewModel.getPoOrganizations(purchaseOrder.poHeaderId!!)
+
         setUpOrganizationsSpinner()
         observeOrganizations()
 

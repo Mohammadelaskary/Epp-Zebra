@@ -6,8 +6,8 @@ import net.gbs.epp_project.Model.POItem
 
 data class PurchaseOrderItemList_ReturnResponse (
     @SerializedName("getList"        ) var itemList        : ArrayList<POItem> = arrayListOf()
-) :BaseResponse<List<POItem>>(){
-    override fun getData(): List<POItem> {
+) :BaseResponse<ArrayList<POItem>>(){
+    override fun getData(): ArrayList<POItem> {
        return itemList
     }
 }

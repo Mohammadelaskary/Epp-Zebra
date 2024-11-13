@@ -1,6 +1,8 @@
 package net.gbs.epp_project.Ui.Return.ReturnToWarehouse
 
+import android.content.ContentValues
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -13,6 +15,7 @@ import net.gbs.epp_project.Base.BundleKeys
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
 import net.gbs.epp_project.Model.ApiRequestBody.ReturnToWarehouseItemsBody
 import net.gbs.epp_project.Model.Locator
+import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.ReturnToWarehouseLine
 import net.gbs.epp_project.Model.ReturnWorkOrder
 import net.gbs.epp_project.Model.ReturnWorkOrderLine
@@ -59,28 +62,14 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
         setUpMoveOrdersNumbersSpinner()
 //        observeGettingIssueOrderLists()
         observeGettingWorkOrdersList()
+        observeGettingLotList()
+        setUpLotSpinner()
 
 
 
 
-//        binding.issueTypeGroup.setOnCheckedChangeListener { radioGroup, id ->
-//            when(id){
-//                R.id.allocate_only -> {
-//                    binding.allocateGroup.visibility = VISIBLE
-//                    binding.transact.visibility = GONE
-//                    binding.lotSerial.visibility = GONE
-//                }
-//                R.id.transact_only ->{
-//                    binding.allocateGroup.visibility = GONE
-//                    binding.transact.visibility = VISIBLE
-//                    binding.lotSerial.visibility = VISIBLE
-//                }
-//            }
-//        }
 
-
-
-        clearInputLayoutError(binding.workOrderNumber, binding.subInventoryTo, binding.itemCode, binding.locatorTo)
+        clearInputLayoutError(binding.lotNum,binding.workOrderNumber, binding.subInventoryTo, binding.itemCode, binding.locatorTo)
         attachButtonsToListener(
             this,
             binding.info,
@@ -90,7 +79,6 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
             binding.showLinesListDialog,
         )
         setUpReportsDialogs()
-//        observeGettingMoveOrder()
         observeGettingMoveOrderLines()
         observeGettingSubInventoryList()
         observeGettingLocatorsList()
@@ -120,16 +108,43 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
         }
     }
 
+    private var lotList = listOf<Lot>()
+    private lateinit var lotAdapter: ArrayAdapter<Lot>
+    private fun observeGettingLotList() {
+        viewModel.getLotListStatus.observe(requireActivity()){
+            when(it.status){
+                Status.LOADING ->{
+                    loadingDialog.show()
+                }
+                Status.SUCCESS -> {
+                    loadingDialog.hide()
+                }
+                else -> {
+                    loadingDialog.hide()
+//                    warningDialog(requireContext(),it.message)
+                }
+            }
+        }
+        viewModel.getLotListLiveData.observe(requireActivity()){
+            Log.d(ContentValues.TAG, "observeGettingLotList: ${it.size}")
+            lotList = it
+            lotAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,lotList)
+            binding.lotNumberSpinner.setAdapter(lotAdapter)
+        }
+    }
 
-//    private lateinit var ordersItemsDialog: IssueOrderReportDialog
-//    private lateinit var onHandItemsDialog: OnHandIssueOrderReportDialog
+
     private lateinit var moveOrderInfoDialog: MoveOrderInfoDialog
     private lateinit var linesDialog: ReturnWorkOrderLinesDialog
     private fun setUpReportsDialogs() {
-//        ordersItemsDialog   = IssueOrderReportDialog(requireContext())
-//        onHandItemsDialog   = OnHandIssueOrderReportDialog(requireContext())
-//        moveOrderInfoDialog = MoveOrderInfoDialog(requireContext(), this)
+
         linesDialog         = ReturnWorkOrderLinesDialog(requireContext(),this)
+    }
+    private var selectedLot:Lot? = null
+    private fun setUpLotSpinner() {
+        binding.lotNumberSpinner.setOnItemClickListener { _, _, selectedPosition, _ ->
+            selectedLot = lotList[selectedPosition]
+        }
     }
 
 //    private fun observeGettingIssueOrderLists() {
@@ -371,28 +386,7 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     }
 
     private var scannedItem: ReturnWorkOrderLine? = null
-//    override fun onData(collection: ScanDataCollection) {
-//        requireActivity().runOnUiThread {
-//            if (moveOrdersLines.isNotEmpty()) {
-//                val scannedText = barcodeReader.onData(collection)
-//                scannedItem = moveOrdersLines.find { it.inventorYITEMCODE == scannedText }
-//                if (scannedItem != null) {
-//                    fillItemData(scannedItem!!)
-//                } else {
-//                    binding.onScanItemViewsGroup.visibility = GONE
-//                    binding.itemCode.error = getString(R.string.wrong_item_code)
-//                }
-//            } else {
-//                binding.onScanItemViewsGroup.visibility = GONE
-//          warningDialog(
-//                        requireContext(),
-//                        getString(R.string.please_enter_valid_work_order_number)
-//                    )
-//
-//            }
-//           barcodeReader.restartReadData()
-//        }
-//    }
+
 
     private fun fillItemData(scannedItem: ReturnWorkOrderLine) {
         if (getEditTextText(binding.itemCode).isEmpty())
@@ -400,32 +394,22 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
         binding.itemDesc.text = scannedItem.inventorYITEMDESC
         binding.onHandQty.text = scannedItem.onHANDQUANTITY.toString()
         binding.onScanItemViewsGroup.visibility = VISIBLE
-        binding.dateEditText?.setText(viewModel.getDisplayTodayDate())
+        binding.dateEditText.setText(viewModel.getDisplayTodayDate())
 
         val allocatedQty = scannedItem.quantity.toString()
         if (allocatedQty.isNotEmpty()) {
 //            binding.allocatedQty.isEnabled = false
             binding.allocatedQty.editText?.setText(allocatedQty)
         }
-
+        if (scannedItem.mustHaveLot()){
+            viewModel.getLotList(orgId,scannedItem.inventorYITEMID,null)
+            binding.lotNum.visibility = VISIBLE
+        } else {
+            binding.lotNum.visibility = GONE
+        }
     }
 
 
-//        if (source.equals(INDIRECT_CHEMICALS)){
-////            binding.issueTypeGroup.visibility = GONE
-////            binding.allocateGroup.visibility = GONE
-//            binding.transact.visibility = VISIBLE
-//            binding.lotSerial.visibility = VISIBLE
-//        } else {
-//            binding.issueTypeGroup.visibility = VISIBLE
-//            binding.transact.visibility = GONE
-//            binding.lotSerial.visibility = GONE
-//        }
-
-
-//    override fun onStatus(statusData: StatusData) {
-//       barcodeReader.onStatus(statusData)
-//    }
 
     override fun onClick(v: View?) {
         when(v?.id){
@@ -476,6 +460,13 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
             binding.locatorTo.error = getString(R.string.please_select_to_locator)
             isReady = false
         }
+        if (scannedItem?.mustHaveLot()!!){
+            if (selectedLot==null){
+                binding.lotNum.error = getString(R.string.please_select_lot)
+                isReady = false
+            }
+
+        }
         return isReady
     }
 
@@ -483,21 +474,6 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
         FROM,To
     }
 
-//    override fun OnOrderItemsButtonClicked() {
-//        moveOrderInfoDialog.dismiss()
-//        ordersItemsDialog.show()
-//    }
-//
-//    override fun OnOrderOnHandButtonClicked() {
-//        moveOrderInfoDialog.dismiss()
-//        onHandItemsDialog.show()
-//    }
-//
-//    override fun onMoveOrderLineClicked(item: MoveOrderLine) {
-//        scannedItem = item
-//        fillItemData(scannedItem!!)
-//        linesDialog.dismiss()
-//    }
 
     override fun onDataScanned(data: String) {
         if (moveOrdersLines.isNotEmpty()) {

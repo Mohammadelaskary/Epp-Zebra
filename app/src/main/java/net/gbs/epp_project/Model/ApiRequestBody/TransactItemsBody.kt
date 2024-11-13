@@ -14,5 +14,6 @@ data class TransactItemsBody (
     @SerializedName("program_id"             ) var programId            : Int?    = null,
     @SerializedName("deviceSerialNo"         ) var deviceSerialNo       : String? = null,
     @SerializedName("transaction_date"         ) var transaction_date       : String?          = null,
-    @SerializedName("applang"                ) var appLang              : String? = null
+    @SerializedName("applang"                ) var appLang              : String? = null,
+    @SerializedName("is_FinalProduct"                ) var isFinalProducts              : Boolean? = null,
 )

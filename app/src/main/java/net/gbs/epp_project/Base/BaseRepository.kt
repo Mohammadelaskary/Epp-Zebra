@@ -7,12 +7,14 @@ import android.util.Log
 import com.honeywell.aidc.BuildConfig
 import net.gbs.epp_project.MainActivity.MainActivity.Companion.BASE_URL
 import net.gbs.epp_project.MainActivity.MainActivity.Companion.setBaseUrl
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Network.ApiFactory.ApiFactory
 import net.gbs.epp_project.Network.ApiInterface.ApiInterface
 import net.gbs.epp_project.Tools.CommunicationData
 import net.gbs.epp_project.Tools.FormatDateTime
 import net.gbs.epp_project.Tools.LocaleHelper
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -44,6 +46,9 @@ open class BaseRepository(val activity: Activity?) {
     )
 
 
+    suspend fun MobileLog(body: MobileLogBody) = apiInterface.MobileLog(body)
+
+
     suspend fun getLotList(orgId:String,itemId:Int?,subInventoryCode:String?) = apiInterface.getLotList(
         userId = userId!!,
         deviceSerialNo = deviceSerialNo,
@@ -52,6 +57,11 @@ open class BaseRepository(val activity: Activity?) {
         itemId = itemId,
         SUBINVENTORY_CODE = subInventoryCode
     )
+
+    suspend fun mobileLog(body: MobileLogBody){
+        body.userId = USER?.notOracleUserId
+        apiInterface.MobileLog(body)
+    }
     suspend fun getDate() = apiInterface.getDate()
 
 //    fun getStoredDeviceDate()            = localStorage.getStoredDeviceDate()

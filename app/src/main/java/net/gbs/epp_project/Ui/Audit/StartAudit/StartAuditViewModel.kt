@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.PhysicalInventory_CountBody
 import net.gbs.epp_project.Model.AuditOrder
 import net.gbs.epp_project.Model.AuditOrderSubinventory
@@ -20,6 +21,7 @@ import net.gbs.epp_project.Repositories.AuditRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 import java.lang.Exception
 
@@ -42,7 +44,15 @@ class StartAuditViewModel(private val application: Application,val activity: Act
                     getLocatorDataLiveData,
                     getLocatorDataStatus,
                     application
-                ).handleData()
+                ).handleData("GetLocatorList")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        auditRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "GetLocatorList"
+                            )
+                        )
             } catch (ex: Exception){
                 Log.e("SignInViewModel", "signIn: ", ex)
                 getLocatorDataStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(R.string.error_in_sending_data)))
@@ -68,7 +78,15 @@ class StartAuditViewModel(private val application: Application,val activity: Act
                         getItemDataLiveData,
                         getItemDataStatus,
                         application
-                    ).handleData()
+                    ).handleData("GetItemList")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        auditRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "GetItemList"
+                            )
+                        )
                 } catch (ex:Exception){
                     Log.e(TAG, "getItemData: ", ex)
                     getItemDataStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
@@ -110,7 +128,15 @@ class StartAuditViewModel(private val application: Application,val activity: Act
                         getSavingDataLiveData,
                         getSavingDataStatus,
                         application
-                    ).handleData()
+                    ).handleData("PhysicalInventory_Count")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        auditRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "PhysicalInventory_Count"
+                            )
+                        )
                 } catch (ex: Exception) {
                     Log.e(TAG, "getSavingData: ", ex)
                     getSavingDataStatus.postValue(
@@ -142,7 +168,15 @@ class StartAuditViewModel(private val application: Application,val activity: Act
             job = CoroutineScope(Dispatchers.IO).launch {
                 try{
                     val response = auditRepository.finishTracking(subInventoryCode,headerId)
-                    ResponseHandler(response,finishTrackingStatus,application).handleData()
+                    ResponseHandler(response,finishTrackingStatus,application).handleData("PhysicalInventoryOrder_FinishTracking")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        auditRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "PhysicalInventoryOrder_FinishTracking"
+                            )
+                        )
                 } catch (ex:Exception){
                     finishTrackingStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                         R.string.error_in_sending_data)))

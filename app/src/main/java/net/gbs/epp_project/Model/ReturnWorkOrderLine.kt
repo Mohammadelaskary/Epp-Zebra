@@ -28,5 +28,10 @@ data class ReturnWorkOrderLine (
     @SerializedName("transactioN_SOURCE_TYPE_ID"   ) var transactioNSOURCETYPEID    : Int?    = null,
     @SerializedName("transactioN_SOURCE_TYPE_DESC" ) var transactioNSOURCETYPEDESC  : String? = null,
     @SerializedName("allocated_QUANTITY"           ) var allocatedQUANTITY          : Double?    = null,
-    @SerializedName("uoM_Conversion"               ) var uoMConversion              : Int?    = null
-)
+    @SerializedName("uoM_Conversion"               ) var uoMConversion              : Int?    = null,
+    @SerializedName("loT_CONTROL_CODE"        ) var loTCONTROLCODE        : String? = null,
+    @SerializedName("loT_CONTROL_NAME"        ) var loTCONTROLNAME        : String? = null,
+
+){
+    fun mustHaveLot():Boolean = loTCONTROLCODE =="2"
+}

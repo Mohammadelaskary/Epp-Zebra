@@ -236,11 +236,12 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
                         Log.d(ContentValues.TAG, "hasInternetConnection: ${MainActivity.BASE_URL}")
                         showSuccessAlerter("Connected successfully",requireActivity())
                         MainActivity.setBaseUrl(protocol,ipAddress, portNum)
+                        viewModel.refreshRepository()
                         localStorage.setFirstTime(false)
                         loadingDialog.hide()
                         if (changeSettingsDialog.isShowing)
                             changeSettingsDialog.dismiss()
-                        refreshUi(requireActivity() as MainActivity)
+//                        refreshUi(requireActivity() as MainActivity)
                     }
                 } else {
                     withContext(Dispatchers.Main) {

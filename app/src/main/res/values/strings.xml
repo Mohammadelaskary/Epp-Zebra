@@ -265,4 +265,9 @@
     <string name="lot_quantity_must_not_be_more_than_selected_lot_quantity">Lot quantity must not be more than selected lot quantity!</string>
     <string name="job_order_number">Job order number</string>
     <string name="please_enter_receipt_number_first">Please enter receipt number first!</string>
+    <string name="add_item">Add item</string>
+    <string name="lot_quantity">Lot quantity</string>
+    <string name="please_enter_items_first">Please enter items first!</string>
+    <string name="return_quantity">Return quantity</string>
+    <string name="please_enter_return_quantity">Please enter return quantity!</string>
 </resources>

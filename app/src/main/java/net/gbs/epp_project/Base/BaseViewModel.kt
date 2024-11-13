@@ -8,22 +8,32 @@ import android.content.SharedPreferences
 import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import net.gbs.epp_project.Model.Lot
+import net.gbs.epp_project.Model.Status
+import net.gbs.epp_project.Model.StatusWithMessage
+import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.FormatDateTime
 import net.gbs.epp_project.Tools.LocaleHelper
+import net.gbs.epp_project.Tools.ResponseDataHandler
+import net.gbs.epp_project.Tools.SingleLiveEvent
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-open class BaseViewModel (application: Application,activity: Activity): AndroidViewModel(application) {
+open class BaseViewModel (private val application: Application,private val activity: Activity): AndroidViewModel(application) {
     var job: Job? = null
     val lang = LocaleHelper.getLanguage(application.applicationContext)!!
     val deviceSerialNo = Settings.Secure.getString(
         application.contentResolver,
         Settings.Secure.ANDROID_ID
     )
+
 
 
 

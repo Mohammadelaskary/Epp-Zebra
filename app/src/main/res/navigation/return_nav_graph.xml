@@ -21,7 +21,11 @@
         android:id="@+id/returnToVendorFragment"
         android:name="net.gbs.epp_project.Ui.Return.ReturnToVendor.ReturnToVendorFragment"
         android:label="fragment_return_to_vendor"
-        tools:layout="@layout/fragment_return_to_vendor" />
+        tools:layout="@layout/fragment_return_to_vendor" >
+        <action
+            android:id="@+id/action_returnToVendorFragment_to_addItemScreenFragment"
+            app:destination="@id/addItemScreenFragment" />
+    </fragment>
     <fragment
         android:id="@+id/startReturnFragment"
         android:name="net.gbs.epp_project.Ui.Return.ReturnToWarehouse.StartReturn.StartReturnFragment"
@@ -48,4 +52,9 @@
             android:id="@+id/action_returnMainMenuFragment_to_returnMenuFragment"
             app:destination="@id/returnMenuFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/addItemScreenFragment"
+        android:name="net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen.AddItemScreenFragment"
+        android:label="fragment_add_item_screen"
+        tools:layout="@layout/fragment_add_item_screen" />
 </navigation>

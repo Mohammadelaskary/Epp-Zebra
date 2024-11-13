@@ -10,6 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.MainActivity.MainActivity
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
 import net.gbs.epp_project.Model.IssueOrderLists
 import net.gbs.epp_project.Model.Locator
@@ -24,6 +26,7 @@ import net.gbs.epp_project.Repositories.IssueRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class TransactSparePartsWorkOrderViewModel(private val application: Application, val activity: Activity) : BaseViewModel(application,activity) {
     var moveOrder: WorkOrderOrder? = null
@@ -36,7 +39,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getMoveOrderLinesStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getMoveOrderLinesByWorkOrderName(workOrderName, orgId)
-                ResponseDataHandler(response,getMoveOrderLinesLiveData,getMoveOrderLinesStatus,application).handleData()
+                ResponseDataHandler(response,getMoveOrderLinesLiveData,getMoveOrderLinesStatus,application).handleData("MoveOrderLinesGetByWorkOrderName")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "MoveOrderLinesGetByWorkOrderName"
+                        )
+                    )
             } catch (ex:Exception){
                 getMoveOrderLinesStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -51,7 +62,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getSubInvertoryListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getSubInventoryList(orgId)
-                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData()
+                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData("SubInvList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "SubInvList"
+                        )
+                    )
             } catch (ex:Exception){
                 getSubInvertoryListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -67,7 +86,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getLocatorsListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getLocatorList(orgId,subInvCode)
-                ResponseDataHandler(response,getLocatorsListLiveData,getLocatorsListStatus,application).handleData()
+                ResponseDataHandler(response,getLocatorsListLiveData,getLocatorsListStatus,application).handleData("LocatorList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "LocatorList"
+                        )
+                    )
             } catch (ex:Exception){
                 getLocatorsListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -82,7 +109,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = issueRepository.transactItems(body)
-                ResponseHandler(response,allocateItemsStatus,application).handleData()
+                ResponseHandler(response,allocateItemsStatus,application).handleData("TransactItems")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "TransactItems"
+                        )
+                    )
             } catch (ex:Exception){
                 allocateItemsStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(R.string.error_in_connection)))
             }
@@ -97,7 +132,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getWorkOrdersListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getWorkOrdersList(orgId)
-                ResponseDataHandler(response,getWorkOrdersListLiveData,getWorkOrdersListStatus,application).handleData()
+                ResponseDataHandler(response,getWorkOrdersListLiveData,getWorkOrdersListStatus,application).handleData("MoveOrdersList_SpareParts")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "MoveOrdersList_SpareParts"
+                        )
+                    )
             } catch (ex:Exception){
                 getWorkOrdersListStatus.postValue(
                     StatusWithMessage(
@@ -112,7 +155,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getWorkOrdersListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getJobOrdersList(orgId)
-                ResponseDataHandler(response,getWorkOrdersListLiveData,getWorkOrdersListStatus,application).handleData()
+                ResponseDataHandler(response,getWorkOrdersListLiveData,getWorkOrdersListStatus,application).handleData("MoveOrdersList_IndirectChemical")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "MoveOrdersList_IndirectChemical"
+                        )
+                    )
             } catch (ex:Exception){
                 getWorkOrdersListStatus.postValue(
                     StatusWithMessage(
@@ -129,7 +180,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
             getIssueOrdersListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = issueRepository.getIssueOrdersList(requestNumber,orgId)
-                ResponseDataHandler(response,getIssueOrdersListLiveData,getIssueOrdersListStatus,application).handleData()
+                ResponseDataHandler(response,getIssueOrdersListLiveData,getIssueOrdersListStatus,application).handleData("MoveOrderGetDetailsByHEADER_ID")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "MoveOrderGetDetailsByHEADER_ID"
+                        )
+                    )
             } catch (ex:Exception){
                 getIssueOrdersListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -149,7 +208,15 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = issueRepository.getOrganizations()
-                ResponseDataHandler(response,getOrganizationsListLiveData,getOrganizationsListStatus,application).handleData()
+                ResponseDataHandler(response,getOrganizationsListLiveData,getOrganizationsListStatus,application).handleData("OrganizationsList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    issueRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OrganizationsList"
+                        )
+                    )
             } catch (ex:Exception){
                 getOrganizationsListStatus.postValue(
                     StatusWithMessage(

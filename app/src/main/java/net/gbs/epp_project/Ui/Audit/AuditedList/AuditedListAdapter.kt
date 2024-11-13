@@ -63,6 +63,7 @@ class AuditedListAdapter:Adapter<AuditedListAdapter.AuditedListViewHolder>(), Fi
         with(holder){
             binding.transactionDate.text = transaction.dateCount?.substring(0,10)
             binding.userName.text = transaction.userNameCount
+            binding.itemCode.text = transaction.itemCode
             binding.itemDesc.text = transaction.itemDescription
             binding.orgName.text = transaction.orgName
             binding.subInventory.text = transaction.subInventoryCode

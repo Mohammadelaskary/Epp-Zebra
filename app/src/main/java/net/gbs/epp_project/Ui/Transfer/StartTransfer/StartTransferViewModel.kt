@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
 import net.gbs.epp_project.Model.ApiRequestBody.AllocateItemsBody
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.Locator
 import net.gbs.epp_project.Model.OnHandItemForAllocate
@@ -21,6 +22,7 @@ import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class StartTransferViewModel(private val application: Application,activity: Activity) : BaseViewModel(application, activity) {
     val repository = IssueRepository(activity)
@@ -35,7 +37,15 @@ class StartTransferViewModel(private val application: Application,activity: Acti
             getSubInvertoryListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = repository.getSubInventoryList(orgId)
-                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData()
+                ResponseDataHandler(response,getSubInvertoryListLiveData,getSubInvertoryListStatus,application).handleData("SubInvList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "SubInvList"
+                        )
+                    )
             } catch (ex:Exception){
                 getSubInvertoryListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -51,7 +61,15 @@ class StartTransferViewModel(private val application: Application,activity: Acti
             getLocatorsListStatus.postValue(StatusWithMessage(Status.LOADING))
             try {
                 val response = repository.getLocatorList(orgId,subInvCode)
-                ResponseDataHandler(response,getLocatorsListLiveData,getLocatorsListStatus,application).handleData()
+                ResponseDataHandler(response,getLocatorsListLiveData,getLocatorsListStatus,application).handleData("LocatorList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "LocatorList"
+                        )
+                    )
             } catch (ex:Exception){
                 getLocatorsListStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(
                     R.string.error_in_getting_data)))
@@ -66,7 +84,15 @@ class StartTransferViewModel(private val application: Application,activity: Acti
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.transferMaterial(body)
-                ResponseHandler(response,transferMaterialStatus,application).handleData()
+                ResponseHandler(response,transferMaterialStatus,application).handleData("TransferMaterial")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "TransferMaterial"
+                        )
+                    )
             } catch (ex:Exception){
                 transferMaterialStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,application.getString(R.string.error_in_connection)))
                 Log.d(ContentValues.TAG, "===ErrorgetLocatorsList: ${ex.message}")
@@ -80,7 +106,16 @@ class StartTransferViewModel(private val application: Application,activity: Acti
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.getItemInfo(itemCode,orgId)
-                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData()
+                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData("OnHandForAllocate")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OnHandForAllocate"
+                        )
+                    )
+
             } catch (ex:Exception){
                 getItemsListStatus.postValue(
                     StatusWithMessage(

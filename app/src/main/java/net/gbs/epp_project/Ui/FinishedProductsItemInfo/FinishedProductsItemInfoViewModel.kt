@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.OnHandItemForAllocate
 import net.gbs.epp_project.Model.OnHandItemLot
 import net.gbs.epp_project.Model.Organization
@@ -17,6 +18,7 @@ import net.gbs.epp_project.Repositories.IssueRepository
 import net.gbs.epp_project.Repositories.SignInRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class FinishedProductsItemInfoViewModel(private val application: Application, activity: Activity) : BaseViewModel(application, activity) {
     private val repository = IssueRepository(activity)
@@ -29,7 +31,15 @@ class FinishedProductsItemInfoViewModel(private val application: Application, ac
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.getItemLotInfo(itemCode,orgId)
-                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData()
+                ResponseDataHandler(response,getItemsListLiveData,getItemsListStatus,application).handleData("OnHand_Lot")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OnHand_Lot"
+                        )
+                    )
             } catch (ex:Exception){
                 getItemsListStatus.postValue(
                     StatusWithMessage(

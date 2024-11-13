@@ -518,7 +518,8 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             isReady = false
             binding.transferQty.error = getString(R.string.please_enter_qty)
         } else {
-            val selectedItemData = itemData.find { it.subinventory == selectedLocatorCodeFrom && it.locator == selectedLocatorCodeFrom }
+            val selectedItemData = itemData.find { it.subinventory == selectedSubInventoryCodeFrom && it.locator == selectedLocatorCodeFrom }
+            Log.d(TAG, "isReadyToSave: ${selectedItemData?.onhand}")
             try{
                 if (qty.toDouble()>selectedItemData?.onhand!!){
                     isReady = false
@@ -528,6 +529,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             } catch (ex:Exception){
                 isReady = false
                 binding.transferQty.error = getString(R.string.please_enter_valid_qty)
+                Log.d(TAG, "isReadyToSave: ${ex.message}")
             }
         }
         return isReady

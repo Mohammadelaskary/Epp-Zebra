@@ -1,19 +1,28 @@
 package net.gbs.epp_project.Ui.Return.ReturnToVendor
 
+import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import androidx.navigation.fragment.findNavController
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
+import net.gbs.epp_project.Base.BundleKeys.PO_ITEMS_LIST_KEY
+import net.gbs.epp_project.Base.BundleKeys.PO_LINE_KEY
 import net.gbs.epp_project.Base.BundleKeys.RETURN_TO_VENDOR
 import net.gbs.epp_project.Base.BundleKeys.RETURN_TO_WAREHOUSE
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
 import net.gbs.epp_project.Model.ApiRequestBody.ReturnMaterialBody
+import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.POItem
 import net.gbs.epp_project.Model.POLineReturn
+import net.gbs.epp_project.Model.PoItemIdWithStatus
 import net.gbs.epp_project.Model.PurchaseOrder
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
@@ -29,10 +38,12 @@ import net.gbs.epp_project.Tools.Tools.showSuccessAlerter
 import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.databinding.FragmentReturnToVendorBinding
 import net.gbs.epp_project.Tools.ZebraScanner
+import net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen.AddItemScreenBottomSheet
+
 class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel,FragmentReturnToVendorBinding>(),
 //    Scanner.DataListener, Scanner.StatusListener,
-    ZebraScanner.OnDataScanned,
-    View.OnClickListener {
+    PoLineAdapter.OnDeleteButtonClicked,
+    View.OnClickListener,AddItemScreenBottomSheet.OnAddItemBottomSheetActions {
 
     companion object {
         fun newInstance() = ReturnToVendorFragment()
@@ -40,70 +51,40 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentReturnToVendorBinding
         get() = FragmentReturnToVendorBinding::inflate
-
-    private lateinit var barcodeReader : ZebraScanner
+    private var addPoLineBottomSheet: AddItemScreenBottomSheet? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
     }
 //    private var organizationId:Int? = null
 //    private var source = ""
+    private var poLines:ArrayList<POLineReturn> = arrayListOf()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        barcodeReader = ZebraScanner(requireActivity(),this)
 //        organizationId = arguments?.getInt(ORGANIZATION_ID_KEY)
 
-
+        setUpPoLinesRecyclerView()
         binding.showCalendar.setOnClickListener {
             datePicker(requireContext(),binding.returnDate).show(requireActivity().supportFragmentManager,getString(R.string.select_a_date))
         }
+
 //        viewModel.getTodayDate()
-        clearInputLayoutError(binding.poNumber,binding.returnDate,binding.itemCode,binding.quantity)
-        attachButtonsToListener(this,binding.doReturn)
+        clearInputLayoutError(binding.poNumber,binding.returnDate)
+        attachButtonsToListener(this,binding.doReturn,binding.addItem)
         onSearchButtonClicked()
         observeSearchingPoNumber()
         observeGettingPoItems()
+        observeGettingLotList()
         observeReturn()
 //        observeGettingDate()
-        EditTextActionHandler.OnEnterKeyPressed(binding.itemCode){
-            val itemCode = getEditTextText(binding.itemCode)
-            if (getEditTextText(binding.receiptNo).isNotEmpty()) {
-                scannedItem = poItemsList.find { it.itemcode == itemCode }
-                if (scannedItem != null) {
-                    binding.itemDataGroup.visibility = VISIBLE
-                    fillItemData()
-                } else {
-                    binding.itemDataGroup.visibility = GONE
-                    binding.itemCode.error =
-                        getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
-                }
-            } else {
-                warningDialog(requireContext(), getString(R.string.please_enter_receipt_number_first))
-            }
-        }
+
+    }
+    private lateinit var poLineAdapter: PoLineAdapter
+    private fun setUpPoLinesRecyclerView() {
+        poLineAdapter = PoLineAdapter(poLines,this)
+        binding.itemsList.adapter = poLineAdapter
     }
 
-//    private fun observeGettingDate() {
-//        viewModel.getDateStatus.observe(requireActivity()){
-//            when(it.status){
-//                Status.LOADING  -> {
-//                    loadingDialog.show()
-//                    binding.showCalendar.isEnabled = false
-//                }
-//                Status.SUCCESS ->{
-//                    loadingDialog.hide()
-//                    binding.showCalendar.isEnabled = false
-//                }
-//                else -> {
-//                    loadingDialog.hide()
-//                    binding.showCalendar.isEnabled = true
-//                }
-//            }
-//        }
-//        viewModel.getDateLiveData.observe(requireActivity()){
-//            binding.returnDate.editText?.setText(it.substring(0,10))
-//        }
-//    }
 
     private fun observeReturn() {
         viewModel.returnMaterialStatus.observe(requireActivity()){
@@ -111,7 +92,7 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
                 Status.LOADING -> loadingDialog.show()
                 Status.SUCCESS -> {
                     loadingDialog.hide()
-                    clearItemData()
+                    clearScreenData()
                     showSuccessAlerter(it.message,requireActivity())
                 }
                 else -> {
@@ -122,15 +103,15 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         }
     }
 
-    private fun clearItemData() {
-        binding.itemDataGroup.visibility = GONE
-        binding.itemCode.editText?.setText("")
-        binding.itemDesc.text = ""
-        binding.quantity.editText?.setText("")
-        binding.uom.text = ""
+    private fun clearScreenData() {
+        binding.poNumber.editText?.setText("")
+        binding.purchaseOrderNumberDataLayout.visibility = GONE
+        poLines.clear()
+        poLineAdapter.notifyDataSetChanged()
     }
 
-    private var poItemsList = listOf<POItem>()
+
+    private var poItemsList = arrayListOf<POItem>()
     private fun observeGettingPoItems() {
         viewModel.poItemsStatus.observe(requireActivity()){
             when(it.status){
@@ -153,13 +134,13 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         viewModel.poItemsLiveData.observe(requireActivity()){
             if (it.isNotEmpty()) {
                 poItemsList = it
-                binding.supplier.text = purchaseOrder.supplier
+                binding.supplier.text = purchaseOrder?.supplier
             } else
                 binding.poNumber.error = getString(R.string.this_purchase_order_has_no_items)
         }
     }
 
-    private lateinit var purchaseOrder: PurchaseOrder
+    private var purchaseOrder: PurchaseOrder? = null
     private fun observeSearchingPoNumber() {
         viewModel.purchaseOrderStatus.observe(requireActivity()){
             when(it.status){
@@ -175,7 +156,7 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
             if (it.isNotEmpty()) {
 //                if (it[0].orgId==organizationId) {
                 purchaseOrder = it[0]
-                viewModel.getPurchaseOrderItemListReturn(purchaseOrder.purchaseOrderNumber)
+                viewModel.getPurchaseOrderItemListReturn(purchaseOrder?.purchaseOrderNumber!!)
 //                } else {
 //                    binding.poNumber.error =
 //                        getString(R.string.wrong_purchase_order_for_selected_organization)
@@ -190,7 +171,6 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
             val poNumber = binding.poNumber.editText?.text.toString().trim()
             if (poNumber.isNotEmpty()){
                 viewModel.getPurchaseOrdersList(poNumber)
-                clearItemData()
             } else {
                 binding.poNumber.error = getString(R.string.please_enter_po_number)
             }
@@ -210,14 +190,40 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 //                binding.poNumber.hint = getString(R.string.purchase_order_number)
 //            }
 //        }
+        if (viewModel.purchaseOrder!=null){
+            purchaseOrder = viewModel.purchaseOrder!!
+            binding.purchaseOrderNumberDataLayout.visibility = VISIBLE
+            binding.supplier.text = purchaseOrder?.supplier
+        }
+
         showBackButton(requireActivity())
         binding.returnDate.editText?.setText(viewModel.getDisplayTodayDate())
-        barcodeReader.onResume()
+    }
+    private fun observeGettingLotList() {
+        viewModel.getLotListStatus.observe(requireActivity()){
+            when(it.status){
+                Status.LOADING -> loadingDialog.show()
+                Status.SUCCESS -> loadingDialog.hide()
+                else -> {
+                    loadingDialog.hide()
+                }
+            }
+        }
+        viewModel.getLotListLiveData.observe(requireActivity()){
+            addPoLineBottomSheet?.lotList = it
+        }
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (purchaseOrder!=null){
+            viewModel.purchaseOrder = purchaseOrder
+        }
+        viewModel.poItemsList = poItemsList
+    }
     override fun onPause() {
         super.onPause()
-        barcodeReader.onPause()
     }
     private var scannedItem :POItem? = null
 //    override fun onData(p0: ScanDataCollection?) {
@@ -237,10 +243,10 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 //    }
 
     private fun fillItemData() {
-        binding.itemCode.editText?.setText(scannedItem?.itemcode)
-        binding.itemDesc.text = scannedItem?.itemdesc
-        binding.uom.text = scannedItem?.itemuom
-        binding.quantity.editText?.setText(scannedItem?.transQty.toString())
+//        binding.itemCode.editText?.setText(scannedItem?.itemcode)
+//        binding.itemDesc.text = scannedItem?.itemdesc
+//        binding.uom.text = scannedItem?.itemuom
+//        binding.quantity.editText?.setText(scannedItem?.transQty.toString())
     }
 
 //    override fun onStatus(p0: StatusData?) {
@@ -251,70 +257,61 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         when(v?.id){
             R.id.do_return ->{
                 val returnDate = binding.returnDate.editText?.text.toString().trim()
-                val quantityText    = binding.quantity.editText?.text.toString().trim()
-                if (isReadyToSave(returnDate,quantityText)){
+                if (isReadyToSave(returnDate)){
                     viewModel.returnMaterial(
                         ReturnMaterialBody(
-                            poHeaderId = purchaseOrder.poHeaderId?.toInt(),
+                            poHeaderId = purchaseOrder?.poHeaderId?.toInt(),
                             transactionDate = viewModel.getTodayDate(),
-                            poLines = listOf(
-                                POLineReturn(
-                                    transactioNID = scannedItem?.transactioNID,
-                                    transactioNTYPE = scannedItem?.transactioNTYPE,
-                                    shipToOrganizationId = scannedItem?.shipToOrganizationId,
-                                    poLineId = scannedItem?.poLineId,
-                                    receiptNum = scannedItem?.receiptno,
-                                    quantityReturned = quantityText.toInt()
-                                )
-                            )
+                            poLines = poLines
                         )
                     )
                 }
             }
+            R.id.add_item -> {
+                addPoLineBottomSheet = AddItemScreenBottomSheet(
+                    requireContext(),requireActivity(),poItemsList,this)
+                addPoLineBottomSheet?.itemsList = poItemsList
+                addPoLineBottomSheet?.show()
+            }
         }
     }
 
-    private fun isReadyToSave(returnDate:String,qty:String):Boolean{
+    private fun isReadyToSave(returnDate:String):Boolean{
         var isReady = true
+        if (poLines.isEmpty()){
+            warningDialog(requireContext(), getString(R.string.please_enter_items_first))
+            isReady = false
+        }
         if (returnDate.isEmpty()){
             binding.returnDate.error = getString(R.string.select_a_date)
             isReady = false
         }
-        if (scannedItem == null){
-            binding.itemCode.error = getString(R.string.please_scan_or_enter_item_code)
-            isReady = false
-        }
-        if (qty.isEmpty()){
-            binding.quantity.error = getString(R.string.please_enter_qty)
-            isReady = false
-        }
-        if (!containsOnlyDigits(qty)){
-            binding.quantity.error = getString(R.string.please_enter_valid_qty)
-            isReady = false
-        } else {
-            if (qty.toInt()>scannedItem?.transQty!!){
-                binding.quantity.error = getString(R.string.quantity_must_be_less_than_or_equal_to)+scannedItem?.transQty!!
-                isReady = false
-            }
-        }
         return isReady
     }
 
-    override fun onDataScanned(data: String) {
-        val scannedText = data
-        if (getEditTextText(binding.receiptNo).isNotEmpty()) {
-            scannedItem = poItemsList.find { it.itemcode == scannedText && it.receiptno== getEditTextText(binding.receiptNo) }
-            if (scannedItem != null) {
-                binding.itemDataGroup.visibility = VISIBLE
-                fillItemData()
-            } else {
-                binding.itemDataGroup.visibility = GONE
-                binding.itemCode.error =
-                    getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
-            }
-        } else {
-            warningDialog(requireContext(), getString(R.string.please_enter_receipt_number_first))
-        }
+    override fun OnItemSelected(item: POItem) {
+        viewModel.getLotList(itemId = item.inventorYITEMID, orgId = item.shipToOrganizationId!!, subInvCode = null)
     }
 
+    override fun OnPoLineAdded(poLineReturn: POLineReturn,position:Int) {
+        poLines.add(poLineReturn)
+        Log.d(TAG, "onClick: $poLines")
+        poLineAdapter.notifyDataSetChanged()
+        poItemsList[position].isSelected = true
+        addPoLineBottomSheet = null
+
+    }
+
+    override fun onDeleteButtonClicked(position: Int) {
+        Log.d(TAG, "OnPoLineDeleted: $poItemsList")
+        poItemsList.forEachIndexed { index, poItem ->
+            if (poLines[position].poLineId == poItem.poLineId) {
+                poItemsList[index].isSelected = false
+            }
+        }
+        Log.d(TAG, "OnPoLineDeleted: $poItemsList")
+        poLines.removeAt(position)
+        poLineAdapter.notifyDataSetChanged()
+
+    }
 }

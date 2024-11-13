@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
+import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.Organization
 import net.gbs.epp_project.Model.OrganizationAudit
 import net.gbs.epp_project.Model.PODetailsItem
@@ -19,6 +20,7 @@ import net.gbs.epp_project.Repositories.ReceivingRepository
 import net.gbs.epp_project.Tools.ResponseDataHandler
 import net.gbs.epp_project.Tools.ResponseHandler
 import net.gbs.epp_project.Tools.SingleLiveEvent
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 
 class StartReceiveViewModel (private val app: Application, val activity: Activity) : BaseViewModel(app,activity) {
@@ -35,7 +37,15 @@ class StartReceiveViewModel (private val app: Application, val activity: Activit
                     getPoOrganizationsLiveData,
                     getPoOrganizationsStatus,
                     getApplication()
-                ).handleData()
+                ).handleData("PurchaseOrderGetOrganizations")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderGetOrganizations"
+                        )
+                    )
             } catch (ex:Exception){
                 getPoOrganizationsStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,app.getString(R.string.error_in_getting_data)))
             }
@@ -47,13 +57,22 @@ class StartReceiveViewModel (private val app: Application, val activity: Activit
     fun getNextReceiptNo(orgId: Int){
         getNextReceiptNoStatus.postValue(StatusWithMessage(Status.LOADING))
         job = CoroutineScope(Dispatchers.IO).launch {
+            val response = receivingRepository.getOrganizationsNextReceiptNo(orgId)
             try {
                 ResponseDataHandler(
-                receivingRepository.getOrganizationsNextReceiptNo(orgId),
+                response = response,
                 getNextReceiptNoLiveData,
                 getNextReceiptNoStatus,
                 getApplication()
-            ).handleData()
+            ).handleData("OrganizationsNextReceiptNo")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "OrganizationsNextReceiptNo"
+                        )
+                    )
             } catch (ex:Exception){
                 getNextReceiptNoStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,app.getString(
                     R.string.error_in_getting_data)))
@@ -67,12 +86,21 @@ class StartReceiveViewModel (private val app: Application, val activity: Activit
         getPreviousReceiptNoStatus.postValue(StatusWithMessage(Status.LOADING))
         job = CoroutineScope(Dispatchers.IO).launch {
             try{
+                val response = receivingRepository.getPreviousReceiptNoList(orgId, poHeaderId)
             ResponseDataHandler(
-                receivingRepository.getPreviousReceiptNoList(orgId, poHeaderId),
+                response,
                 getPreviousReceiptNoLiveData,
                 getPreviousReceiptNoStatus,
                 getApplication()
-            ).handleData()
+            ).handleData("PurchaseOrderReceiptNoList_Received")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderReceiptNoList_Received"
+                        )
+                    )
             } catch (ex:Exception){
                 getPreviousReceiptNoStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,app.getString(R.string.error_in_getting_data)))
             }
@@ -93,7 +121,15 @@ class StartReceiveViewModel (private val app: Application, val activity: Activit
                 getPurchaseOrderDetailsListLiveData,
                 getPurchaseOrderDetailsListStatus,
                 app
-            ).handleData()
+            ).handleData("PurchaseOrderLinesGetByID")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    receivingRepository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "PurchaseOrderLinesGetByID"
+                        )
+                    )
             } catch (ex:Exception){
                 getPurchaseOrderDetailsListStatus.postValue(StatusWithMessage(Status.LOADING,app.getString(R.string.error_in_getting_data)))
             }
@@ -110,7 +146,15 @@ class StartReceiveViewModel (private val app: Application, val activity: Activit
                 try {
                 val response =
                     receivingRepository.ItemReceiving(poHeaderId, poLines, transactionDate)
-                ResponseHandler(response, itemReceivingResultStatus, getApplication()).handleData()
+                ResponseHandler(response, itemReceivingResultStatus, getApplication()).handleData("ReceiveMaterial_Multi")
+                    if (response.body()?.responseStatus?.errorMessage!=null)
+                        receivingRepository.MobileLog(
+                            MobileLogBody(
+                                userId = USER?.notOracleUserId,
+                                errorMessage = response.body()?.responseStatus?.errorMessage,
+                                apiName = "ReceiveMaterial_Multi"
+                            )
+                        )
                 } catch (ex:Exception){
                     Log.d(TAG, "ItemsReceiving: ${ex.message}")
                     itemReceivingResultStatus.postValue(StatusWithMessage(Status.NETWORK_FAIL,app.getString(R.string.error_in_getting_data)))

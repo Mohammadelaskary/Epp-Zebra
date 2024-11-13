@@ -28,8 +28,12 @@ data class MoveOrderLine(
     @SerializedName("transactioN_TYPE_DESCRIPTION" ) var transactioNTYPEDESCRIPTION : String? = null,
     @SerializedName("transactioN_SOURCE_TYPE_ID"   ) var transactioNSOURCETYPEID    : Int?    = null,
     @SerializedName("transactioN_SOURCE_TYPE_DESC" ) var transactioNSOURCETYPEDESC  : String? = null,
-    @SerializedName("allocated_QUANTITY"           ) var allocatedQUANTITY          : Double?    = null
+    @SerializedName("allocated_QUANTITY"           ) var allocatedQUANTITY          : Double?    = null,
+    @SerializedName("loT_CONTROL_CODE"        ) var loTCONTROLCODE        : String? = null,
+    @SerializedName("loT_CONTROL_NAME"        ) var loTCONTROLNAME        : String? = null,
 ) {
+
+    fun mustHaveLot():Boolean = loTCONTROLCODE=="2"
     companion object{
         fun toJson(moveOrderLine: MoveOrderLine):String{
             return Gson().toJson(moveOrderLine)
