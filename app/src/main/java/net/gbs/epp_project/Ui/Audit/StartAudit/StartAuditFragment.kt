@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
+import net.gbs.epp_project.Model.AuditLocator
 import net.gbs.epp_project.Model.AuditOrder
 import net.gbs.epp_project.Model.AuditOrderSubinventory
 import net.gbs.epp_project.Model.NavigationKeys.AUDIT_ORDER_KEY
@@ -183,14 +184,14 @@ class StartAuditFragment :
     private fun observeFinishTracking() {
         viewModel.finishTrackingStatus.observe(viewLifecycleOwner){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     Tools.showSuccessAlerter(it.message, requireActivity())
                 }
                 else -> {
                     Tools.warningDialog(requireContext(), it.message)
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                 }
             }
         }
@@ -200,9 +201,9 @@ class StartAuditFragment :
     private fun observeSavingData() {
         viewModel.getSavingDataStatus.observe(viewLifecycleOwner) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     Tools.showSuccessAlerter(it.message, requireActivity())
 //                        binding.itemCode.editText?.setText("")
                     isItemSaved = true
@@ -210,7 +211,7 @@ class StartAuditFragment :
                 }
 
                 else -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     Tools.warningDialog(requireContext(), it.message)
                     binding.itemCode.editText?.setText("")
                 }
@@ -220,8 +221,9 @@ class StartAuditFragment :
 
         viewModel.getSavingDataLiveData.observe(requireActivity()){
             auditOrder = it[0]
-            itemsDialog.itemsList = auditOrder.getItemsForLocatorCodeAndSubInventory(selectedSubInventory?.subInventoryCode!!,
-                getEditTextText(binding.locatorCode)
+            itemsList = auditOrder.getItemsForLocatorCodeAndSubInventory(
+                    selectedSubInventory?.subInventoryCode!!,
+                    getEditTextText(binding.locatorCode)
             )
         }
     }
@@ -321,7 +323,7 @@ class StartAuditFragment :
     private lateinit var subInventoriesAdapter:ArrayAdapter<AuditOrderSubinventory>
     private var selectedSubInventoryList:MutableList<AuditOrderSubinventory> = mutableListOf()
     private var selectedSubInventory :AuditOrderSubinventory?=null
-    private var locatorsForSubinventory = listOf<AuditOrderSubinventory>()
+    private var locatorsForSubinventory : AuditLocator? = null
     private fun fillSubInventorySpinner() {
         subInventoriesList = auditOrder.editedSubInventoriesList()
         subInventoriesAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,subInventoriesList)
@@ -375,8 +377,8 @@ class StartAuditFragment :
                 binding.locatorCode.editText?.setText("")
             }
             R.id.locators_list_info -> {
-                if (locatorsForSubinventory.isNotEmpty()){
-                    locatorsDialog.locatorsList = locatorsForSubinventory
+                if (locatorsForSubinventory?.auditOrderList?.isNotEmpty()!!){
+                    locatorsDialog.auditLocator = locatorsForSubinventory
                     locatorsDialog.show()
                 } else {
                     warningDialog(requireContext(),getString(R.string.please_select_sub_inventory_first))

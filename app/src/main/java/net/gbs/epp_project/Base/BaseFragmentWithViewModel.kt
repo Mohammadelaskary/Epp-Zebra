@@ -15,7 +15,7 @@ import net.gbs.epp_project.Tools.LoadingDialog
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragmentWithViewModel<VM : AndroidViewModel, VB : ViewBinding> : Fragment() {
-    lateinit var loadingDialog: LoadingDialog
+    var loadingDialog: LoadingDialog? = null
     lateinit var viewModel: VM
     lateinit var binding: VB
     abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
@@ -32,7 +32,8 @@ abstract class BaseFragmentWithViewModel<VM : AndroidViewModel, VB : ViewBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        loadingDialog = LoadingDialog(requireContext())
+        if (loadingDialog==null)
+            loadingDialog = LoadingDialog(requireContext())
         val parameterizedType = javaClass.genericSuperclass as? ParameterizedType
 
         // now get first actual class, which is the class of VM (ProfileVM in this case)

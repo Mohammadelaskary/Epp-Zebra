@@ -68,14 +68,14 @@ ZebraScanner.OnDataScanned
     private fun observeFinishingCycleCount() {
         viewModel.finishCycleCountStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     back(this)
                     showSuccessAlerter(it.message,requireActivity())
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -85,14 +85,14 @@ ZebraScanner.OnDataScanned
     private fun observeSavingCycleDetails() {
         viewModel.saveCycleCountStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearData()
                     showSuccessAlerter(it.message,requireActivity())
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -109,10 +109,10 @@ ZebraScanner.OnDataScanned
     private fun observeGettingLocatorData() {
         viewModel.getLocatorDataStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.locatorCode.error = it.message
                 }
             }

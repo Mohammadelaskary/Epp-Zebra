@@ -67,17 +67,17 @@ class FinishedProductsItemInfoFragment : BaseFragmentWithViewModel<FinishedProdu
         viewModel.getItemsListStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING -> {
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 Status.ERROR -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.itemCode.error = it.message
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(),it.message)
                 }
             }

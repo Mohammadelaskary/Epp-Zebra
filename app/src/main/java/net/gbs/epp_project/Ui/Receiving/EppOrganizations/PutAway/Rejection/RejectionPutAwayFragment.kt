@@ -12,6 +12,8 @@ import net.gbs.epp_project.Model.PODetailsItem2
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
+import net.gbs.epp_project.Tools.Tools.warningDialog
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 import net.gbs.epp_project.databinding.FragmentPutAwayBinding
 
 class RejectionPutAwayFragment : BaseFragmentWithViewModel<RejectionPutAwayViewModel,FragmentPutAwayBinding>(),View.OnClickListener,
@@ -40,14 +42,14 @@ class RejectionPutAwayFragment : BaseFragmentWithViewModel<RejectionPutAwayViewM
         viewModel.poDetailsItemsStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                     binding.errorMessage.visibility = View.GONE
                 }
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.errorMessage.visibility = View.VISIBLE
                     binding.errorMessage.text = it.message
                 }
@@ -56,8 +58,9 @@ class RejectionPutAwayFragment : BaseFragmentWithViewModel<RejectionPutAwayViewM
         viewModel.poDetailsItemsLiveData.observe(requireActivity()) { it ->
             val itemList = mutableListOf<PODetailsItem2>()
             it.forEach {
-                if (it.isinspected.toBoolean() && !it.isRejectedDelivered.toBoolean()&&it.itemqtyRejected!=0) {
-                    itemList.add(it)
+                if (it.itemqtyRejected!=0) {
+                    if(it.isinspected.toBoolean() && !it.isRejectedDelivered.toBoolean())
+                        itemList.add(it)
                 }
             }
             if (itemList.isNotEmpty()) {
@@ -101,9 +104,16 @@ class RejectionPutAwayFragment : BaseFragmentWithViewModel<RejectionPutAwayViewM
 
     val bundle = Bundle()
     override fun putAwayItemClicked(poDetailsItem2: PODetailsItem2) {
-        bundle.putString(PO_DETAILS_ITEM_2_Key,PODetailsItem2.toJson(poDetailsItem2))
-        bundle.putBoolean(PUT_AWAY_REJECT,true)
-        view?.findNavController()?.navigate(R.id.action_rejectionPutAwayFragment_to_startPutAwayFragment,bundle)
+        val userOrganization = SignInFragment.USER?.organizations?.find { it.orgId == poDetailsItem2.shipToOrganizationId }
+        if (userOrganization!=null) {
+            bundle.putString(PO_DETAILS_ITEM_2_Key, PODetailsItem2.toJson(poDetailsItem2))
+            bundle.putBoolean(PUT_AWAY_REJECT, true)
+            view?.findNavController()
+                ?.navigate(R.id.action_rejectionPutAwayFragment_to_startPutAwayFragment, bundle)
+        } else {
+            warningDialog(requireContext(),
+                getString(R.string.this_user_isn_t_authorized_to_reject_purchase_order_with_this_organization))
+        }
     }
     override fun onDestroyView() {
         super.onDestroyView()

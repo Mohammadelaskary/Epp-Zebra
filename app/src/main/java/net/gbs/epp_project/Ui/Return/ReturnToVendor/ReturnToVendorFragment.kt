@@ -1,6 +1,5 @@
 package net.gbs.epp_project.Ui.Return.ReturnToVendor
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
@@ -9,36 +8,24 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import androidx.navigation.fragment.findNavController
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
-import net.gbs.epp_project.Base.BundleKeys.PO_ITEMS_LIST_KEY
-import net.gbs.epp_project.Base.BundleKeys.PO_LINE_KEY
-import net.gbs.epp_project.Base.BundleKeys.RETURN_TO_VENDOR
-import net.gbs.epp_project.Base.BundleKeys.RETURN_TO_WAREHOUSE
-import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
 import net.gbs.epp_project.Model.ApiRequestBody.ReturnMaterialBody
-import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.POItem
 import net.gbs.epp_project.Model.POLineReturn
-import net.gbs.epp_project.Model.PoItemIdWithStatus
 import net.gbs.epp_project.Model.PurchaseOrder
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
-import net.gbs.epp_project.Tools.EditTextActionHandler
 import net.gbs.epp_project.Tools.Tools
 import net.gbs.epp_project.Tools.Tools.attachButtonsToListener
 import net.gbs.epp_project.Tools.Tools.clearInputLayoutError
-import net.gbs.epp_project.Tools.Tools.containsOnlyDigits
 import net.gbs.epp_project.Tools.Tools.datePicker
-import net.gbs.epp_project.Tools.Tools.getEditTextText
 import net.gbs.epp_project.Tools.Tools.showBackButton
 import net.gbs.epp_project.Tools.Tools.showSuccessAlerter
 import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.databinding.FragmentReturnToVendorBinding
-import net.gbs.epp_project.Tools.ZebraScanner
 import net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen.AddItemScreenBottomSheet
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 
 class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel,FragmentReturnToVendorBinding>(),
 //    Scanner.DataListener, Scanner.StatusListener,
@@ -89,14 +76,14 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
     private fun observeReturn() {
         viewModel.returnMaterialStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearScreenData()
                     showSuccessAlerter(it.message,requireActivity())
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -116,15 +103,15 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         viewModel.poItemsStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                     binding.purchaseOrderNumberDataLayout.visibility = GONE
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.purchaseOrderNumberDataLayout.visibility = VISIBLE
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.poNumber.error = it.message
                     binding.purchaseOrderNumberDataLayout.visibility = GONE
                 }
@@ -144,10 +131,10 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
     private fun observeSearchingPoNumber() {
         viewModel.purchaseOrderStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.poNumber.error = it.message
                 }
             }
@@ -155,8 +142,14 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         viewModel.purchaseOrderLiveData.observe(requireActivity()){
             if (it.isNotEmpty()) {
 //                if (it[0].orgId==organizationId) {
-                purchaseOrder = it[0]
-                viewModel.getPurchaseOrderItemListReturn(purchaseOrder?.purchaseOrderNumber!!)
+                val userOrganization = USER?.organizations?.find { organization -> organization.orgId == it[0].orgId  }
+                if (userOrganization!=null) {
+                    purchaseOrder = it[0]
+                    viewModel.getPurchaseOrderItemListReturn(purchaseOrder?.purchaseOrderNumber!!)
+                } else {
+                    warningDialog(requireContext(),
+                        getString(R.string.this_user_is_not_authorized_to_return_on_purchase_order_with_this_organization))
+                }
 //                } else {
 //                    binding.poNumber.error =
 //                        getString(R.string.wrong_purchase_order_for_selected_organization)
@@ -179,17 +172,10 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
 
     override fun onResume() {
         super.onResume()
-//        source = arguments?.getString(SOURCE_KEY)!!
-//        when(source){
-//            RETURN_TO_VENDOR -> {
-                Tools.changeFragmentTitle(getString(R.string.return_to_vendor), requireActivity())
-                binding.poNumber.hint = getString(R.string.purchase_order_number)
-//            }
-//            RETURN_TO_WAREHOUSE -> {
-//                Tools.changeFragmentTitle(getString(R.string.return_to_warehouse), requireActivity())
-//                binding.poNumber.hint = getString(R.string.purchase_order_number)
-//            }
-//        }
+        showBackButton(requireActivity())
+        Tools.changeFragmentTitle(getString(R.string.return_to_vendor), requireActivity())
+        binding.poNumber.hint = getString(R.string.purchase_order_number)
+
         if (viewModel.purchaseOrder!=null){
             purchaseOrder = viewModel.purchaseOrder!!
             binding.purchaseOrderNumberDataLayout.visibility = VISIBLE
@@ -202,10 +188,10 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
     private fun observeGettingLotList() {
         viewModel.getLotListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -222,36 +208,7 @@ class ReturnToVendorFragment : BaseFragmentWithViewModel<ReturnToVendorViewModel
         }
         viewModel.poItemsList = poItemsList
     }
-    override fun onPause() {
-        super.onPause()
-    }
-    private var scannedItem :POItem? = null
-//    override fun onData(p0: ScanDataCollection?) {
-//        requireActivity().runOnUiThread {
-//            val scannedText = barcodeReader.onData(p0)
-//            scannedItem = poItemsList.find { it.itemcode == scannedText }
-//            if (scannedItem!=null){
-//                binding.itemDataGroup.visibility = VISIBLE
-//                fillItemData()
-//            } else {
-//                binding.itemDataGroup.visibility = GONE
-//                binding.itemCode.error =
-//                    getString(R.string.item_code_is_wrong_or_doesn_t_belong_to_this_purchase_order)
-//            }
-//            barcodeReader.restartReadData()
-//        }
-//    }
 
-    private fun fillItemData() {
-//        binding.itemCode.editText?.setText(scannedItem?.itemcode)
-//        binding.itemDesc.text = scannedItem?.itemdesc
-//        binding.uom.text = scannedItem?.itemuom
-//        binding.quantity.editText?.setText(scannedItem?.transQty.toString())
-    }
-
-//    override fun onStatus(p0: StatusData?) {
-//        barcodeReader.onStatus(p0)
-//    }
 
     override fun onClick(v: View?) {
         when(v?.id){

@@ -29,8 +29,9 @@ data class MoveOrderLine(
     @SerializedName("transactioN_SOURCE_TYPE_ID"   ) var transactioNSOURCETYPEID    : Int?    = null,
     @SerializedName("transactioN_SOURCE_TYPE_DESC" ) var transactioNSOURCETYPEDESC  : String? = null,
     @SerializedName("allocated_QUANTITY"           ) var allocatedQUANTITY          : Double?    = null,
-    @SerializedName("loT_CONTROL_CODE"        ) var loTCONTROLCODE        : String? = null,
-    @SerializedName("loT_CONTROL_NAME"        ) var loTCONTROLNAME        : String? = null,
+    @SerializedName("loT_CONTROL_CODE"             ) var loTCONTROLCODE             : String? = null,
+    @SerializedName("loT_CONTROL_NAME"             ) var loTCONTROLNAME             : String? = null,
+    var isAlreadyAdded :Boolean = false
 ) {
 
     fun mustHaveLot():Boolean = loTCONTROLCODE=="2"

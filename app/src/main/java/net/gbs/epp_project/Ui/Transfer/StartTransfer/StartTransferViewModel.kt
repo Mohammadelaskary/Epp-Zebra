@@ -12,6 +12,7 @@ import net.gbs.epp_project.Model.ApiRequestBody.AllocateItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.Locator
+import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.OnHandItemForAllocate
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.StatusWithMessage
@@ -121,6 +122,32 @@ class StartTransferViewModel(private val application: Application,activity: Acti
                     StatusWithMessage(
                         Status.NETWORK_FAIL,application.getString(
                             R.string.error_in_getting_data)+"\n${ex.message}")
+                )
+            }
+        }
+    }
+
+    val getLotListLiveData = SingleLiveEvent<List<Lot>>()
+    val getLotListStatus   = SingleLiveEvent<StatusWithMessage>()
+    fun getLotList(orgId:Int,itemId:Int?,subInvCode: String?){
+        job = CoroutineScope(Dispatchers.IO).launch {
+            getLotListStatus.postValue(StatusWithMessage(Status.LOADING))
+            try {
+                val response = repository.getLotList(orgId.toString(),itemId,subInvCode)
+                ResponseDataHandler(response,getLotListLiveData,getLotListStatus,application).handleData("LotList")
+                if (response.body()?.responseStatus?.errorMessage!=null)
+                    repository.MobileLog(
+                        MobileLogBody(
+                            userId = USER?.notOracleUserId,
+                            errorMessage = response.body()?.responseStatus?.errorMessage,
+                            apiName = "LotList"
+                        )
+                    )
+            } catch (ex:Exception){
+                getLotListStatus.postValue(
+                    StatusWithMessage(
+                        Status.NETWORK_FAIL,application.getString(
+                            R.string.error_in_getting_data))
                 )
             }
         }

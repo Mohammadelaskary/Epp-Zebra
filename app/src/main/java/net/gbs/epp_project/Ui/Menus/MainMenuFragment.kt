@@ -77,13 +77,13 @@ class MainMenuFragment : Fragment() {
     }
 
     private fun handleAuthority() {
-        binding.issue.isEnabled = USER?.isFactory!!
+        binding.issue.isEnabled = USER?.isFactory!!||USER?.isSpareParts!!||USER?.isIndirectChemical!!
         binding.receiving.isEnabled = USER?.isReceive!!||USER?.isInspection!!||USER?.isDeliver!!||USER?.isDeliverRejected!!||USER?.isItemPos!!
         binding.returnButton.isEnabled = USER?.isReturnToVendor!!||USER?.isReturnToWarehouse!!
         binding.transfer.isEnabled = USER?.isTransfer!!
         binding.audit.isEnabled = USER?.isPhysicalInventory!!|| USER?.isCycleCount!!
         binding.itemInfo.isEnabled = USER?.isItemInfo!!
-        binding.finalProducts.isEnabled = USER?.isIssueFinalProduct!!||USER?.isReceive!!||USER?.isItemInfo!!
+        binding.finalProducts.isEnabled = USER?.isIssueFinalProduct!!|| USER?.isReceiveFinalProduct!!||USER?.isItemInfoFinalProduct!!
     }
 
 

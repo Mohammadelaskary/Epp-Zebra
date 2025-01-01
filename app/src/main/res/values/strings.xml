@@ -270,4 +270,18 @@
     <string name="please_enter_items_first">Please enter items first!</string>
     <string name="return_quantity">Return quantity</string>
     <string name="please_enter_return_quantity">Please enter return quantity!</string>
+    <string name="please_select_or_enter_lot">Please select or enter lot!</string>
+    <string name="change_password">Change password</string>
+    <string name="please_enter_current_password">Please enter current password!</string>
+    <string name="please_enter_new_password">Please enter new password!</string>
+    <string name="please_enter_password_again">Please enter password again!</string>
+    <string name="password_don_t_match">Password don\'t match</string>
+    <string name="this_user_isn_t_authorized_to_select_that_organization">This user isn\'t authorized to select that organization!</string>
+    <string name="this_user_is_not_authorized_to_return_on_purchase_order_with_this_organization">This user is not authorized to return on purchase order with this organization</string>
+    <string name="this_user_isn_t_authorized_to_inspect_purchase_order_with_this_organization">This user isn\'t authorized to inspect purchase order with this organization</string>
+    <string name="this_user_isn_t_authorized_to_deliver_purchase_order_with_this_organization">This user isn\'t authorized to deliver purchase order with this organization</string>
+    <string name="this_user_isn_t_authorized_to_reject_purchase_order_with_this_organization">This user isn\'t authorized to reject purchase order with this organization</string>
+    <string name="relogin">Relogin</string>
+    <string name="lots">Lots</string>
+    <string name="please_add_items_first">Please add items first!</string>
 </resources>

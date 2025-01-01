@@ -17,5 +17,9 @@ data class OnHandItemForAllocate (
     @SerializedName("locator"              ) var locator            : String? = null,
     @SerializedName("onhand"               ) var onhand             : Double?    = null,
     @SerializedName("uom"                  ) var uom                : String? = null,
-    @SerializedName("availblE_QTY"         ) var availblEQTY        : Int?    = null
-)
+    @SerializedName("availblE_QTY"         ) var availblEQTY        : Double?    = null,
+    @SerializedName("loT_CONTROL_CODE"     ) var loTCONTROLCODE     : String? = null,
+    @SerializedName("loT_CONTROL_NAME"     ) var loTCONTROLNAME     : String? = null
+){
+    fun mustHaveLot():Boolean = loTCONTROLCODE=="2"
+}

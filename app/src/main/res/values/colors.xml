@@ -5,6 +5,7 @@
     <color name="alerter_success_color">#4CAF50</color>
     <color name="alerter_error_color">#D32F2F</color>
     <color name="grey">#EAEAEA</color>
+    <color name="dark_grey">#6F6F6F</color>
     <color name="green">#3DBB27</color>
     <color name="red">#DA4A4A</color>
     <color name="blue">#0606AF</color>

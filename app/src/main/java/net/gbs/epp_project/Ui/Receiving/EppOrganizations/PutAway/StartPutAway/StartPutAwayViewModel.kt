@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.gbs.epp_project.Base.BaseViewModel
 import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
+import net.gbs.epp_project.Model.DeliverLot
 import net.gbs.epp_project.Model.Locator
 import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.Status
@@ -108,13 +109,13 @@ class StartPutAwayViewModel(private val app:Application,val activity: Activity) 
             }
         }
     }
-    val getLotListLiveData = SingleLiveEvent<List<Lot>>()
+    val getLotListLiveData = SingleLiveEvent<List<DeliverLot>>()
     val getLotListStatus = SingleLiveEvent<StatusWithMessage>()
 
     fun getLotList(orgId:Int,itemId:Int?,subInvCode:String?){
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = receivingRepository.getLotList(orgId.toString(),itemId,subInvCode)
+                val response = receivingRepository.getDeliverLotList(orgId.toString(),itemId,subInvCode)
                 ResponseDataHandler(response,getLotListLiveData,getLotListStatus,app).handleData("LotList")
                 if (response.body()?.responseStatus?.errorMessage!=null)
                     receivingRepository.MobileLog(

@@ -1,17 +1,17 @@
 package net.gbs.epp_project.Ui.Audit.StartAudit.AuditDataDialog.AuditLocatorsDialog
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import net.gbs.epp_project.Model.AuditOrderSubinventory
+import net.gbs.epp_project.Model.AuditLocator
+import net.gbs.epp_project.R
 import net.gbs.epp_project.databinding.AuditLocatorItemBinding
-import net.gbs.epp_project.databinding.AuditedTransactionItemLayoutBinding
 
-class AuditLocatorsAdapter():Adapter<AuditLocatorsAdapter.AuditLocatorsViewHolder>() {
-    var locatorsList:List<AuditOrderSubinventory> = listOf()
+class AuditLocatorsAdapter(private val context: Context):Adapter<AuditLocatorsAdapter.AuditLocatorsViewHolder>() {
+    var auditLocator:AuditLocator? = null
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -26,10 +26,15 @@ class AuditLocatorsAdapter():Adapter<AuditLocatorsAdapter.AuditLocatorsViewHolde
     }
 
     override fun getItemCount(): Int {
-        return locatorsList.size
+        return auditLocator?.auditOrderList?.size!!
     }
 
     override fun onBindViewHolder(holder: AuditLocatorsViewHolder, position: Int) {
-        holder.binding.locatorCode.text = locatorsList[position].locatorCode
+        holder.binding.locatorCode.text = auditLocator!!.auditOrderList[position].locatorCode
+        if (auditLocator!!.isFullScanned){
+            holder.binding.locatorCode.setTextColor(context.getColor(R.color.green))
+        } else {
+            holder.binding.locatorCode.setTextColor(context.getColor(R.color.black))
+        }
     }
 }

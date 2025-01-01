@@ -10,18 +10,23 @@ import android.view.View.OnClickListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys
+import net.gbs.epp_project.Base.BundleKeys.ADD_LOT_QTY_S_T_LINE
 import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
 import net.gbs.epp_project.Base.BundleKeys.SPARE_PARTS
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
+import net.gbs.epp_project.Model.ApiRequestBody.TransactMultiItemsBody
 import net.gbs.epp_project.Model.Locator
 import net.gbs.epp_project.Model.MoveOrderLine
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.SubInventory
+import net.gbs.epp_project.Model.TransactMultiLine
 import net.gbs.epp_project.Model.WorkOrderOrder
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.EditTextActionHandler
@@ -43,6 +48,7 @@ import net.gbs.epp_project.databinding.FragmentTransactSparePartsWorkOrderBindin
 class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSparePartsWorkOrderViewModel, FragmentTransactSparePartsWorkOrderBinding>(),MoveOrderInfoDialog.OnInfoDialogButtonsClicked,
 //    DataListener,StatusListener,
     ZebraScanner.OnDataScanned,
+    AddedLinesAdapter.OnLineItemDeleteButtonClicked,
     OnClickListener, MoveOrderLinesAdapter.OnMoveOrderLineItemClicked {
 
     companion object {
@@ -69,7 +75,7 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         observeGettingIssueOrderLists()
         observeGettingWorkOrdersList()
         setUpReportsDialogs()
-
+        setUpAddedLinesRecyclerView()
 
 
 
@@ -83,8 +89,23 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
             binding.showLinesListDialog,
             binding.showLinesListDialog,
             binding.clearItem!!,
-            binding.lotSerial
+//            binding.lotSerial
+            binding.addItem!!
         )
+
+//        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+//            ADD_LOT_QTY_S_T_LINE)?.observe(viewLifecycleOwner) { result ->
+//            val line = TransactMultiLine.fromJson(result)
+//            addedLines.add(line)
+//            addedLinesAdapter.notifyDataSetChanged()
+//        }
+
+        setFragmentResultListener(ADD_LOT_QTY_S_T_LINE) { key, bundle ->
+            Log.d(TAG, "onViewCreated: key $key")
+            val line = TransactMultiLine.fromJson(bundle.getString("transact_line_key")!!)
+            addedLines.add(line)
+            addedLinesAdapter.notifyDataSetChanged()
+        }
 
 //        observeGettingMoveOrder()
         observeGettingMoveOrderLines()
@@ -114,6 +135,13 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
 
             }
         }
+    }
+
+    private val addedLines : MutableList<TransactMultiLine> = mutableListOf()
+    private lateinit var addedLinesAdapter: AddedLinesAdapter
+    private fun setUpAddedLinesRecyclerView() {
+        addedLinesAdapter = AddedLinesAdapter(addedLines,this)
+        binding.addedLines?.adapter = addedLinesAdapter
     }
 
 
@@ -156,8 +184,8 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     private var workOrdersList = mutableListOf<WorkOrderOrder>()
     private lateinit var moveOrdersAdapter: ArrayAdapter<WorkOrderOrder>
     private fun setUpMoveOrdersNumbersSpinner() {
-        binding.workOrderNumberSpinner?.setOnItemClickListener { _, _, position, _ ->
-            selectedMoveOrder = workOrdersList[position]
+        binding.workOrderNumberSpinner.setOnItemClickListener { _, _, position, _ ->
+            selectedMoveOrder = workOrdersList.find { it.workOrderName== getEditTextText(binding.workOrderNumber) }
             binding.info.isEnabled = false
             if (workOrdersList.isNotEmpty()) {
                 viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
@@ -171,11 +199,11 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     private fun observeGettingWorkOrdersList() {
         viewModel.getWorkOrdersListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(), it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -217,9 +245,9 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     private fun observeAllocatingTransactingItems() {
         viewModel.allocateItemsStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearLineData()
 //                    back(this)
                     viewModel.getMoveOrderLines(selectedMoveOrder?.workOrderName!!, orgId)
@@ -228,7 +256,7 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
                 }
 
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -236,7 +264,7 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     }
 
     private fun clearLineData() {
-        binding.onScanItemViewsGroup.visibility = GONE
+//        binding.onScanItemViewsGroup.visibility = GONE
         binding.itemCode.editText?.setText("")
         binding.allocatedQty.editText?.setText("")
         binding.subInventoryFromSpinner.setText("", false)
@@ -258,10 +286,10 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     private fun observeGettingSubInventoryList() {
         viewModel.getSubInvertoryListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -311,10 +339,10 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     private fun observeGettingLocatorsList() {
         viewModel.getLocatorsListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(), it.message)
                 }
             }
@@ -345,14 +373,14 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         }
     }
 
-    private var moveOrdersLines = listOf<MoveOrderLine>()
+    private var moveOrdersLines = mutableListOf<MoveOrderLine>()
     private fun observeGettingMoveOrderLines() {
         viewModel.getMoveOrderLinesStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     back(this)
                     warningDialog(requireContext(), it.message)
                 }
@@ -360,7 +388,7 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         }
         viewModel.getMoveOrderLinesLiveData.observe(requireActivity()) {
             if (it.isNotEmpty()) {
-                moveOrdersLines = it
+                moveOrdersLines = it as MutableList
                 linesDialog.linesList = moveOrdersLines
                 binding.dataGroup.visibility = VISIBLE
             } else {
@@ -395,7 +423,7 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         }
 
         barcodeReader.onResume()
-
+        Log.d(TAG, "onResume: ")
         if (viewModel.moveOrder!=null){
             selectedMoveOrder = viewModel.moveOrder
         }
@@ -415,28 +443,6 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
     }
 
     private var scannedItem: MoveOrderLine? = null
-//    override fun onData(collection: ScanDataCollection) {
-//        requireActivity().runOnUiThread {
-//            if (moveOrdersLines.isNotEmpty()) {
-//                val scannedText = barcodeReader.onData(collection)
-//                scannedItem = moveOrdersLines.find { it.inventorYITEMCODE == scannedText }
-//                if (scannedItem != null) {
-//                    fillItemData(scannedItem!!)
-//                } else {
-//                    binding.onScanItemViewsGroup.visibility = GONE
-//                    binding.itemCode.error = getString(R.string.wrong_item_code)
-//                }
-//            } else {
-//                binding.onScanItemViewsGroup.visibility = GONE
-//          warningDialog(
-//                        requireContext(),
-//                        getString(R.string.please_enter_valid_work_order_number)
-//                    )
-//
-//            }
-//           barcodeReader.restartReadData()
-//        }
-//    }
 
     private fun fillItemData(scannedItem: MoveOrderLine) {
         if (getEditTextText(binding.itemCode).isEmpty())
@@ -469,13 +475,13 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         Log.d(TAG, "fillItemData: $source")
             binding.allocatedQty.editText?.setText(allocatedQty)
 
-                if(scannedItem.mustHaveLot()){
-                    binding.transact.visibility = GONE
-                    binding.lotSerial.visibility = VISIBLE
-                }else{
-                    binding.transact.visibility = VISIBLE
-                    binding.lotSerial.visibility = GONE
-                }
+//                if(scannedItem.mustHaveLot()){
+//                    binding.transact.visibility = GONE
+//                    binding.lotSerial.visibility = VISIBLE
+//                }else{
+//                    binding.transact.visibility = VISIBLE
+//                    binding.lotSerial.visibility = GONE
+//                }
 
 
     }
@@ -485,25 +491,110 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
         when(v?.id){
             R.id.info -> moveOrderInfoDialog.show()
             R.id.transact -> {
-                val body = TransactItemsBody(
-                    orgId = orgId,
-                    lineId = scannedItem?.linEID,
-                    lineNumber = scannedItem?.linENUMBER,
-                    transaction_date = viewModel.getTodayDate(),
-                    isFinalProducts = false
-                )
-                viewModel.transactItems(body)
-                Log.d(TAG, "onClick: Transact")
+                if (addedLines.isNotEmpty()) {
+                    val body = TransactMultiItemsBody(
+                        orgId = orgId,
+                        transactionDate = viewModel.getTodayDate(),
+                        isFinalProduct = false,
+                        lines = addedLines
+                    )
+                    viewModel.transactMultiItems(body)
+                } else {
+                    warningDialog(requireContext(), getString(R.string.please_add_items_first))
+                }
             }
             R.id.show_lines_list_dialog -> linesDialog.show()
             R.id.clear_item -> clearLineData()
-            R.id.lot_serial -> {
-                val bundle = Bundle()
-                bundle.putString(BundleKeys.MOVE_ORDER_NUMBER_KEY,selectedMoveOrder?.moveOrderRequestNumber!!)
-                bundle.putString(BundleKeys.MOVE_ORDER_LINE_KEY,MoveOrderLine.toJson(scannedItem!!))
-                bundle.putString(SOURCE_KEY,source)
-                bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,orgId)
-                Navigation.findNavController(requireView()).navigate(R.id.action_transactSparePartsWorkOrderFragment_to_transactionHistoryFragment,bundle)
+            R.id.add_item ->{
+                if (scannedItem!=null) {
+                    val qtyText = getEditTextText(binding.allocatedQty)
+                    if (isReadyToAdd(qtyText)) {
+                        if (!scannedItem?.mustHaveLot()!!) {
+                            val addedLine = TransactMultiLine(
+                                lineId = scannedItem?.linEID,
+                                linENUMBER = scannedItem?.linENUMBER,
+                                lots = arrayListOf(),
+                                froMSUBINVENTORYCODE = selectedSubInventoryCodeFrom,
+                                froMLOCATORCode = selectedLocatorCodeFrom,
+                                quantity = scannedItem?.quantity,
+                                loTCONTROLCODE = scannedItem?.loTCONTROLCODE,
+                                tOSUBINVENTORYCODE = selectedSubInventoryCodeTo,
+                                inventorYITEMCODE = scannedItem?.inventorYITEMCODE
+                            )
+                            addedLines.add(addedLine)
+                            addedLinesAdapter.notifyDataSetChanged()
+                            setLineAsAddedOrNot(scannedItem?.linEID, true)
+                            clearLineData()
+                        } else {
+                            val bundle = Bundle()
+                            bundle.putString(
+                                BundleKeys.MOVE_ORDER_NUMBER_KEY,
+                                selectedMoveOrder?.moveOrderRequestNumber!!
+                            )
+                            bundle.putString(
+                                BundleKeys.MOVE_ORDER_LINE_KEY,
+                                MoveOrderLine.toJson(scannedItem!!)
+                            )
+                            bundle.putString(SOURCE_KEY, source)
+                            bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY, orgId)
+                            Navigation.findNavController(requireView()).navigate(
+                                R.id.action_transactSparePartsWorkOrderFragment_to_transactionHistoryFragment,
+                                bundle
+                            )
+                        }
+                    }
+                }else {
+                    warningDialog(requireContext(),getString(R.string.please_scan_or_enter_item_code))
+                }
+            }
+//            R.id.lot_serial -> {
+//                val bundle = Bundle()
+//                bundle.putString(BundleKeys.MOVE_ORDER_NUMBER_KEY,selectedMoveOrder?.moveOrderRequestNumber!!)
+//                bundle.putString(BundleKeys.MOVE_ORDER_LINE_KEY,MoveOrderLine.toJson(scannedItem!!))
+//                bundle.putString(SOURCE_KEY,source)
+//                bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,orgId)
+//                Navigation.findNavController(requireView()).navigate(R.id.action_transactSparePartsWorkOrderFragment_to_transactionHistoryFragment,bundle)
+//            }
+        }
+    }
+
+    private fun isReadyToAdd(qtyText: String): Boolean {
+        var isReady = true
+        if (scannedItem==null){
+            isReady = false
+            binding.itemCode.error = getString(R.string.please_scan_or_enter_item_code)
+        }
+        if (selectedSubInventoryCodeFrom==null){
+            isReady = false
+            binding.subInventoryFrom.error = getString(R.string.please_select_from_sub_inventory)
+        }
+        if (selectedLocatorCodeFrom==null){
+            isReady = false
+            binding.locatorFrom.error = getString(R.string.please_select_from_locator)
+        }
+        if (selectedSubInventoryCodeTo==null){
+            isReady = false
+            binding.subInventoryTo.error = getString(R.string.please_select_to_sub_inventory)
+        }
+        if (qtyText.isEmpty()){
+            isReady = false
+            binding.allocatedQty.error = getString(R.string.please_enter_qty)
+        } else {
+            try{
+                var qty : Double = qtyText.toDouble()
+            } catch (ex:Exception){
+                isReady = false
+                binding.allocatedQty.error = getString(R.string.please_enter_valid_qty)
+            }
+        }
+        return isReady
+    }
+
+    private fun setLineAsAddedOrNot(lineId: Int?, isAdded: Boolean) {
+        moveOrdersLines.forEachIndexed { index, moveOrderLine ->
+            if(moveOrderLine.linEID == lineId){
+                moveOrdersLines[index].isAlreadyAdded = isAdded
+                linesDialog.linesList = moveOrdersLines
             }
         }
     }
@@ -594,4 +685,11 @@ class TransactSparePartsWorkOrderFragment : BaseFragmentWithViewModel<TransactSp
 
         }
     }
+
+    override fun onLineItemDeleteButtonClicked(lineId: Int?,position:Int) {
+        addedLines.removeAt(position)
+        addedLinesAdapter.notifyItemRemoved(position)
+        setLineAsAddedOrNot(lineId,false)
+    }
+
 }

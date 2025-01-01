@@ -66,14 +66,14 @@ class POsInfoFragment : BaseFragmentWithViewModel<POsInfoViewModel,FragmentPosIn
         viewModel.getItemInfoStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING -> {
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
                     adapter.poList= listOf()
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(),it.message)
                 }
             }

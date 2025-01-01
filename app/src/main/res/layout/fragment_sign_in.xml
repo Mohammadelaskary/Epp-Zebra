@@ -104,7 +104,13 @@
                     android:maxLines="1"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/change_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:text="@string/change_password"
+                android:visibility="gone"/>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sign_in"
                 android:layout_width="match_parent"

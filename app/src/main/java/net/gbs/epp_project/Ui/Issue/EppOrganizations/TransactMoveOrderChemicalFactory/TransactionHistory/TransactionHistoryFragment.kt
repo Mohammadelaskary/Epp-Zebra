@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
-import net.gbs.epp_project.Base.BundleKeys.FACTORY
-import net.gbs.epp_project.Base.BundleKeys.FINAL_PRODUCT
+import net.gbs.epp_project.Base.BundleKeys.ADD_LOT_QTY_S_T_LINE
 import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
 import net.gbs.epp_project.Base.BundleKeys.ISSUE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.MOVE_ORDER_LINE_KEY
@@ -17,21 +19,21 @@ import net.gbs.epp_project.Base.BundleKeys.MOVE_ORDER_NUMBER_KEY
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
 import net.gbs.epp_project.Base.BundleKeys.RECEIVE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
+import net.gbs.epp_project.Base.BundleKeys.SPARE_PARTS
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
 import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.LotQty
 import net.gbs.epp_project.Model.MoveOrderLine
 import net.gbs.epp_project.Model.Status
+import net.gbs.epp_project.Model.TransactMultiLine
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
 import net.gbs.epp_project.Tools.Tools.back
 import net.gbs.epp_project.Tools.Tools.clearInputLayoutError
-import net.gbs.epp_project.Tools.Tools.containsOnlyDigits
 import net.gbs.epp_project.Tools.Tools.getEditTextText
 import net.gbs.epp_project.Tools.Tools.showSuccessAlerter
 import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.databinding.FragmentTransactionHistoryBinding
-import kotlin.math.log
 
 class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryViewModel, FragmentTransactionHistoryBinding>() {
 
@@ -54,10 +56,11 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
         source          = arguments?.getString(SOURCE_KEY)
         Log.d(TAG, "onViewCreated: $source")
         remainingQty    = moveOrderLine.allocatedQUANTITY!!
-        when(source) {
-            FACTORY, RECEIVE_FINAL_PRODUCT, ISSUE_FINAL_PRODUCT -> binding.moveOrderNumberLabel.text = getString(R.string.move_order_number)
-            INDIRECT_CHEMICALS     -> binding.moveOrderNumberLabel.text = getString(R.string.work_order_number)
-        }
+//        when(source) {
+//            FACTORY, RECEIVE_FINAL_PRODUCT, ISSUE_FINAL_PRODUCT -> binding.moveOrderNumberLabel.text = getString(R.string.move_order_number)
+//            INDIRECT_CHEMICALS     -> binding.moveOrderNumberLabel.text = getString(R.string.work_order_number)
+//        }
+        binding.moveOrderNumberLabel.text = getString(R.string.move_order_number)
         fillMoveOrderLineData()
         clearInputLayoutError(binding.lotQty,binding.lotNumber)
 
@@ -68,16 +71,35 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
         binding.save.setOnClickListener {
             if (lotQtyList.isNotEmpty()){
                 if (remainingQty==0.0) {
-                    viewModel.transactItems(
-                        TransactItemsBody(
-                            orgId = orgId,
+                    if(source== SPARE_PARTS||source == INDIRECT_CHEMICALS) {
+                        val line = TransactMultiLine(
                             lineId = moveOrderLine.linEID,
-                            lineNumber = moveOrderLine.linENUMBER,
-                            lots = lotQtyList,
-                            transaction_date = viewModel.getTodayFullDate(),
-                            isFinalProducts = source == RECEIVE_FINAL_PRODUCT || source == ISSUE_FINAL_PRODUCT
+                            linENUMBER = moveOrderLine.linENUMBER,
+                            lots = arrayListOf(),
+                            froMSUBINVENTORYCODE = moveOrderLine.froMSUBINVENTORYCODE,
+                            froMLOCATORCode = moveOrderLine.froMLOCATORCode,
+                            quantity = moveOrderLine.quantity,
+                            loTCONTROLCODE = moveOrderLine.loTCONTROLCODE,
+                            tOSUBINVENTORYCODE = moveOrderLine.tOSUBINVENTORYCODE,
+                            inventorYITEMCODE = moveOrderLine.inventorYITEMCODE
                         )
-                    )
+//                        findNavController().previousBackStackEntry?.savedStateHandle?.set(
+//                            ADD_LOT_QTY_S_T_LINE, TransactMultiLine.toJson(line))
+                        setFragmentResult(ADD_LOT_QTY_S_T_LINE, bundleOf("transact_line_key" to TransactMultiLine.toJson(line)))
+                        findNavController().navigateUp()
+
+                    }else {
+                        viewModel.transactItems(
+                            TransactItemsBody(
+                                orgId = orgId,
+                                lineId = moveOrderLine.linEID,
+                                lineNumber = moveOrderLine.linENUMBER,
+                                lots = lotQtyList,
+                                transaction_date = viewModel.getTodayFullDate(),
+                                isFinalProducts = source == RECEIVE_FINAL_PRODUCT || source == ISSUE_FINAL_PRODUCT
+                            )
+                        )
+                    }
                 } else {
                     warningDialog(requireContext(),
                         getString(R.string.please_add_all_quantity_to_lots))
@@ -132,14 +154,14 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
     private fun observeSavingTransacting() {
         viewModel.transactItemsStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showSuccessAlerter(it.message,requireActivity())
                     back(this)
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -194,13 +216,13 @@ class TransactionHistoryFragment : BaseFragmentWithViewModel<TransactionHistoryV
         viewModel.getLotListStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(),it.message)
                 }
             }

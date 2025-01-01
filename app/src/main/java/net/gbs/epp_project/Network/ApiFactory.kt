@@ -1,7 +1,8 @@
 package net.gbs.epp_project.Network.ApiFactory
 
 import com.google.gson.GsonBuilder
-import net.gbs.epp_project.MainActivity.MainActivity.Companion.BASE_URL
+import net.gbs.epp_project.Base.BaseRepository
+import net.gbs.epp_project.Network.ApiInterface.ApiInterface
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,7 +19,8 @@ class ApiFactory {
         private var retrofit:Retrofit?=null
         private const val REQUEST_TIMEOUT = 60L
         private var okHttpClient:OkHttpClient?=null
-        fun getInstance ():Retrofit?{
+        fun getInstance (baseUrl:String):Retrofit?{
+            retrofit = null
             if (okHttpClient==null) initOkHttpClient()
             if (retrofit==null){
                 retrofit = okHttpClient?.let {
@@ -26,7 +28,7 @@ class ApiFactory {
                         .setLenient()
                         .create()
                     Retrofit.Builder()
-                        .baseUrl(BASE_URL)
+                        .baseUrl(baseUrl)
                         .client(it)
                         .addConverterFactory(GsonConverterFactory.create(gson))
                         .build()
@@ -57,4 +59,16 @@ class ApiFactory {
             okHttpClient = httpClient.build()
         }
     }
+}
+class BaseUrlProvider {
+    companion object {
+        fun updateBaseUrl(protocol: String,ipAddress:String,portNum:String):String {
+            return "$protocol://$ipAddress:$portNum/api/GBSEPPWMS/"
+        }
+    }
+}
+
+object RetrofitInstance {
+    fun apiService(baseUrl:String): ApiInterface =
+        ApiInterface.getRetrofitInstance(baseUrl)!!.create(ApiInterface::class.java)
 }

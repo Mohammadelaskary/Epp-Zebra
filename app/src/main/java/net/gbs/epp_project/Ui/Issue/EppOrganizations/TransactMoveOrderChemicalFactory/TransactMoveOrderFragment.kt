@@ -183,7 +183,7 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private lateinit var moveOrdersAdapter: ArrayAdapter<MoveOrder>
     private fun setUpMoveOrdersNumbersSpinner() {
         binding.moveOrderNumberSpinner.setOnItemClickListener { _, _, position, _ ->
-            selectedMoveOrder = moveOrdersList[position]
+            selectedMoveOrder = moveOrdersList.find { it.moveOrderRequestNumber== getEditTextText(binding.moveOrderNumber) }
             binding.info.isEnabled = false
             if (moveOrdersList.isNotEmpty()){
                 viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
@@ -201,11 +201,11 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeGettingMoveOrdersList() {
         viewModel.getMoveOrdersListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(), it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -245,10 +245,10 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeGettingLotList() {
         viewModel.getLotListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(), it.message)
                     binding.onScanItemViewsGroup.visibility = VISIBLE
                     fillItemData(scannedItem!!)
@@ -270,9 +270,9 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeAllocatingTransactingItems() {
         viewModel.allocateItemsStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearLineData()
                     try {
                         viewModel.getIssueOrderLists(
@@ -289,7 +289,7 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
                 }
 
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -321,10 +321,10 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeGettingSubInventoryList() {
         viewModel.getSubInvertoryListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -372,10 +372,10 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeGettingLocatorsList() {
         viewModel.getLocatorsListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(), it.message)
                 }
             }
@@ -407,10 +407,10 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     private fun observeGettingMoveOrderLines() {
         viewModel.getMoveOrderLinesStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    back(this)
                     warningDialog(requireContext(), it.message)
                 }
@@ -475,36 +475,6 @@ class TransactMoveOrderFragment : BaseFragmentWithViewModel<TransactMoveOrderVie
     }
 
     private var scannedItem: MoveOrderLine? = null
-//    override fun onData(collection: ScanDataCollection) {
-//        requireActivity().runOnUiThread {
-//            if (moveOrdersLines.isNotEmpty()) {
-//                val scannedText = barcodeReader.onData(collection)
-//                scannedItem = moveOrdersLines.find { it.inventorYITEMCODE == scannedText }
-//                if (scannedItem != null) {
-//                    viewModel.getLotList(orgId,scannedItem?.inventorYITEMID)
-//                } else {
-//                    binding.onScanItemViewsGroup.visibility = GONE
-//                    binding.itemCode.error = getString(R.string.wrong_item_code)
-//                }
-//            } else {
-//                binding.onScanItemViewsGroup.visibility = GONE
-//                when (source) {
-//                    FACTORY -> warningDialog(
-//                        requireContext(),
-//                        getString(R.string.please_enter_valid_move_order_number)
-//                    )
-//
-//                    RECEIVE_FINAL_PRODUCT, ISSUE_FINAL_PRODUCT -> warningDialog(
-//                        requireContext(),
-//                        getString(R.string.please_enter_valid_sales_order_number)
-//                    )
-//
-//                }
-//            }
-//           barcodeReader.restartReadData()
-//        }
-//    }
-
     private fun fillItemData(scannedItem: MoveOrderLine) {
         if (getEditTextText(binding.itemCode).isEmpty())
             binding.itemCode.editText?.setText(scannedItem.inventorYITEMCODE)

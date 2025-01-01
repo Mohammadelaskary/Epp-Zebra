@@ -110,14 +110,14 @@ class ReturnToWipFragment : BaseFragmentWithViewModel<ReturnToWipViewModel,Fragm
     private fun observeTransferingItem() {
         viewModel.transferMaterialStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showSuccessAlerter(it.message,requireActivity())
                     clearItemData()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -163,10 +163,10 @@ class ReturnToWipFragment : BaseFragmentWithViewModel<ReturnToWipViewModel,Fragm
     private fun observeGettingItemData() {
         viewModel.getItemsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                     clearItemData()
                 }
@@ -269,16 +269,16 @@ class ReturnToWipFragment : BaseFragmentWithViewModel<ReturnToWipViewModel,Fragm
 //        viewModel.getDateStatus.observe(requireActivity()){
 //            when(it.status){
 //                Status.LOADING -> {
-//                    loadingDialog.show()
+//                    loadingDialog!!.show()
 //                    binding.date.isEnabled = false
 //                }
 //                Status.SUCCESS -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.date.isEnabled = false
 //                    viewModel.getSubInvertoryList(orgId)
 //                }
 //                else -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.date.error = it.message
 //                    binding.date.isEnabled = true
 //                    viewModel.getSubInvertoryList(orgId)
@@ -299,10 +299,10 @@ class ReturnToWipFragment : BaseFragmentWithViewModel<ReturnToWipViewModel,Fragm
     private fun observeGettingSubInventoryList() {
         viewModel.getSubInvertoryListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }

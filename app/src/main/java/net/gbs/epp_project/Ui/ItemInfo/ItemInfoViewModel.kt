@@ -2,6 +2,8 @@ package net.gbs.epp_project.Ui.ItemInfo
 
 import android.app.Activity
 import android.app.Application
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +71,7 @@ class ItemInfoViewModel(private val application: Application,activity: Activity)
                         Status.NETWORK_FAIL,application.getString(
                             R.string.error_in_connection))
                 )
+                Log.e(TAG, "getItemsList: ${ex.message}",ex)
             }
         }
     }

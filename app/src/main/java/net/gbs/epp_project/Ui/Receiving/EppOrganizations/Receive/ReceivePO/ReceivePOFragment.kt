@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.navigation.findNavController
 import com.google.gson.Gson
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
@@ -44,27 +42,18 @@ class ReceivePOFragment : BaseFragmentWithViewModel<ReceivePOViewModel, Fragment
 
         observeData()
         clearInputLayoutError(binding.poNumber,binding.poHeaderOperatingUnit)
-        setUpOperatingUnit()
     }
     var selectedPurchaseOrder:PurchaseOrder? = null
-//    lateinit var operatingUnitsAdapter: ArrayAdapter<PurchaseOrder>
     var purchaseOrderList:List<PurchaseOrder> = listOf()
-    private fun setUpOperatingUnit() {
-//        operatingUnitsAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,purchaseOrderList)
-//        binding.operatingUnitSpinner.setAdapter(operatingUnitsAdapter)
-//        binding.operatingUnitSpinner.setOnItemClickListener(){adapterView: AdapterView<*>, view2: View, position: Int, l: Long ->
-//            selectedPurchaseOrder = purchaseOrderList[position]
-//        }
-    }
 
 
     private fun observeData(){
         viewModel.purchaseOrderStatus.observe(viewLifecycleOwner){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }

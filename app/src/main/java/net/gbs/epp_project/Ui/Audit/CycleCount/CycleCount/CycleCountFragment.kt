@@ -67,10 +67,10 @@ class CycleCountFragment : BaseFragmentWithViewModel<CycleCountViewModel,Fragmen
     private fun observeCreatingCycleCount() {
         viewModel.createNewCycleCountStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -107,10 +107,10 @@ class CycleCountFragment : BaseFragmentWithViewModel<CycleCountViewModel,Fragmen
     private fun observeGettingLocatorsList() {
         viewModel.getLocatorsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -138,10 +138,10 @@ class CycleCountFragment : BaseFragmentWithViewModel<CycleCountViewModel,Fragmen
     private fun observeGettingItemsList() {
         viewModel.getItemsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -182,10 +182,10 @@ class CycleCountFragment : BaseFragmentWithViewModel<CycleCountViewModel,Fragmen
     private fun observeGettingOrganizations() {
         viewModel.getOrganizationsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showErrorAlerter(it.message,requireActivity())
                 }
             }

@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import androidx.navigation.Navigation
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.FACTORY
-import net.gbs.epp_project.Base.BundleKeys.FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
@@ -56,11 +55,11 @@ class EppOrganizationsIssueFragment : BaseFragmentWithViewModel<EppOrganizations
     private fun observeGettingOrganizationsList() {
         viewModel.getOrganizationsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(),it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }

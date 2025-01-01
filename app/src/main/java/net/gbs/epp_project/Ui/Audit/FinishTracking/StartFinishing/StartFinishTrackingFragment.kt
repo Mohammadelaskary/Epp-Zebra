@@ -12,7 +12,6 @@ import net.gbs.epp_project.Model.AuditOrder
 import net.gbs.epp_project.Model.AuditOrderSubinventory
 import net.gbs.epp_project.Model.NavigationKeys.AUDIT_ORDER_KEY
 import net.gbs.epp_project.Model.Status
-import net.gbs.epp_project.Model.SubInventory
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
 import net.gbs.epp_project.Tools.Tools.changeFragmentTitle
@@ -43,14 +42,14 @@ class StartFinishTrackingFragment : BaseFragmentWithViewModel<StartFinishTrackin
     private fun observeFinishTracking() {
         viewModel.finishTrackingStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     showSuccessAlerter(it.message,requireActivity())
                 }
                 else -> {
                     warningDialog(requireContext(),it.message)
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                 }
             }
         }

@@ -54,14 +54,14 @@ class OnHandFragment : BaseFragmentWithViewModel<OnHandViewModel, FragmentOnHand
         viewModel.getOnHandsItemsStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.errorMessage.visibility = GONE
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.errorMessage.visibility = VISIBLE
                     binding.errorMessage.text = it.message
                     binding.itemsList.visibility = GONE

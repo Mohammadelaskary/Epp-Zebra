@@ -1,8 +1,6 @@
 package net.gbs.epp_project.Ui.Return.ReturnToVendor.AddItemScreen
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -89,10 +87,10 @@ class AddItemScreenFragment : BaseFragmentWithViewModel<AddItemScreenViewModel,F
     private fun observeGettingLotList() {
         viewModel.getLotListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }

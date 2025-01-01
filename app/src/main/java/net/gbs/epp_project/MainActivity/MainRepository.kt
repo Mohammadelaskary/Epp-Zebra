@@ -1,19 +1,15 @@
 package net.gbs.epp_project.MainActivity
 
 import android.app.Activity
-import net.gbs.epp_project.Base.LocalStorage
-import java.text.SimpleDateFormat
-import java.util.Date
+import net.gbs.epp_project.Base.BaseRepository
+import net.gbs.epp_project.Model.ApiRequestBody.SignInBody
 
-class MainRepository(activity: Activity) {
-    val localStorage = LocalStorage(activity)
+
+class MainRepository(activity: Activity):BaseRepository(activity){
     fun getStoredDeviceDate()            = localStorage.getStoredDeviceDate()
     fun getStoredActualDate()            = localStorage.getStoredActualDate()
-    fun setStoredDeviceDate(date:String) = localStorage.setStoredDeviceDate(date)
-    fun setStoredActualDate(date:String) = localStorage.setStoredActualDate(date)
 
-    fun getTodayDate():String{
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
-        return sdf.format(Date())
-    }
+    suspend fun signIn(body: SignInBody) = apiInterface.signIn(body)
+
+
 }

@@ -3,11 +3,12 @@ package net.gbs.epp_project.Ui.Audit.StartAudit.AuditDataDialog.AuditLocatorsDia
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import net.gbs.epp_project.Model.AuditLocator
 import net.gbs.epp_project.Model.AuditOrderSubinventory
 import net.gbs.epp_project.databinding.AuditLocatorsDialogBinding
 
 class AuditLocatorsDialog(private val context: Context):Dialog(context) {
-    var locatorsList:List<AuditOrderSubinventory> = listOf()
+    var auditLocator:AuditLocator? = null
     private lateinit var binding:AuditLocatorsDialogBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,12 +21,12 @@ class AuditLocatorsDialog(private val context: Context):Dialog(context) {
     }
     private lateinit var locatorsAdapter: AuditLocatorsAdapter
     private fun setUpRecyclerView() {
-        locatorsAdapter = AuditLocatorsAdapter()
+        locatorsAdapter = AuditLocatorsAdapter(context)
         binding.locatorsList.adapter = locatorsAdapter
     }
 
     override fun onStart() {
         super.onStart()
-        locatorsAdapter.locatorsList = locatorsList
+        locatorsAdapter.auditLocator = auditLocator
     }
 }

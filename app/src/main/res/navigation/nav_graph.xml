@@ -37,6 +37,9 @@
             app:exitAnim="@anim/push_down_out"
             app:popEnterAnim="@anim/push_right_in"
             app:popExitAnim="@anim/push_up_out"/>
+        <action
+            android:id="@+id/action_signInFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainMenuFragment"
@@ -283,4 +286,8 @@
             android:id="@+id/action_finishProductsTransactMoveOrderFragment_to_transactionHistoryFragment"
             app:destination="@id/transactionHistoryFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="net.gbs.epp_project.Ui.SplashAndSignIn.ChangePassword.ChangePasswordFragment"
+        android:label="ChangePasswordFragment" />
 </navigation>

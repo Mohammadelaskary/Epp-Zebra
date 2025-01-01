@@ -279,7 +279,6 @@
             android:layout_height="wrap_content"
             android:hint="@string/lot_serial"
             android:imeOptions="actionGo"
-            android:inputType="none"
             android:lines="1"
             android:maxLines="1"
             android:singleLine="true" />

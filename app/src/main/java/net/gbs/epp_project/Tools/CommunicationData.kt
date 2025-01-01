@@ -27,7 +27,7 @@ class CommunicationData(val activity: Activity) {
                 ) != null
             ) sharedPreferences.getString(
                 IP_ADDRESS_NAME, null
-            )!! else "41.196.137.3"
+            )!! else "10.100.70.222"
         }
 
         fun getPortNumber(): String {
@@ -37,7 +37,7 @@ class CommunicationData(val activity: Activity) {
                 ) != null
             ) sharedPreferences.getString(
                 PORT_NUM_NAME, null
-            )!! else "2216"
+            )!! else "230"
         }
 
         fun saveProtocol(protocol: String?) {

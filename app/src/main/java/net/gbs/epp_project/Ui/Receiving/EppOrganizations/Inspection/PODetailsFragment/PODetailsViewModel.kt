@@ -28,16 +28,16 @@ class PODetailsViewModel(app: Application,val activity: Activity) : BaseViewMode
         poAdapter: PoDetailsAdapter,
         orgId: Int, poHeaderId: String
     ) {
-        loadingDialog.show()
+        loadingDialog!!.show()
         job = CoroutineScope(Dispatchers.IO).launch {
             val response = receivingRepository.getPurchaseOrderDetailsList(orgId, poHeaderId)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     poAdapter.poList = response.body()?.getData()!!
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 } else {
                     Tools.warningDialog(activity, response.body()?.responseStatus?.statusMessage!!)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
             if (response.body()?.responseStatus?.errorMessage!=null)

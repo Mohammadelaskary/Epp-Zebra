@@ -12,9 +12,11 @@ import net.gbs.epp_project.Model.ApiRequestBody.ReturnMaterialBody
 import net.gbs.epp_project.Model.ApiRequestBody.ReturnToWarehouseItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.SignInBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
+import net.gbs.epp_project.Model.ApiRequestBody.TransactMultiItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.ApiResponse.CreateNewCycleCountOrderResponse
 import net.gbs.epp_project.Model.ApiResponse.CycleCountOrder_StockCompareResponse
+import net.gbs.epp_project.Model.ApiResponse.DeliverLotListResponse
 import net.gbs.epp_project.Model.ApiResponse.GetDateResponse
 import net.gbs.epp_project.Model.ApiResponse.LocatorListResponse
 import net.gbs.epp_project.Model.ApiResponse.LotListResponse
@@ -47,6 +49,7 @@ import net.gbs.epp_project.Model.Response.GetPhysicalInventoryOrderCounting_Tran
 import net.gbs.epp_project.Model.Response.GetPhysicalInventoryOrderListResponse
 import net.gbs.epp_project.Model.Response.NoDataResponse
 import net.gbs.epp_project.Model.Response.SignInResponse
+import net.gbs.epp_project.Network.ApiFactory.ApiFactory
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -55,7 +58,11 @@ import retrofit2.http.Query
 
 
 interface ApiInterface {
+    companion object {
 
+//        var BASE_URL: String = "https://api.example.com/" // Default Base URL
+        fun getRetrofitInstance (baseUrl:String) = ApiFactory.getInstance(baseUrl)
+    }
     @POST("SignIn")
     suspend fun signIn(@Body body: SignInBody):Response<SignInResponse>
 
@@ -250,6 +257,15 @@ interface ApiInterface {
         @Query("INVENTORY_ITEM_ID")  itemId : Int?,
         @Query("SUBINVENTORY_CODE")  SUBINVENTORY_CODE : String?,
     ) : Response<LotListResponse>
+    @GET("LotList")
+    suspend fun getDeliverLotList(
+        @Query("UserID")  userId : Int,
+        @Query("DeviceSerialNo")  deviceSerialNo : String,
+        @Query("applang")  appLang : String,
+        @Query("org_id")  orgId : String,
+        @Query("INVENTORY_ITEM_ID")  itemId : Int?,
+        @Query("SUBINVENTORY_CODE")  SUBINVENTORY_CODE : String?,
+    ) : Response<DeliverLotListResponse>
 
     @GET("CreateNewCycleCountOrder")
     suspend fun createNewCycleCountOrderByLocator(
@@ -380,6 +396,10 @@ interface ApiInterface {
     @POST("TransactItems")
     suspend fun TransactItems(
         @Body  body : TransactItemsBody
+    ) : Response<NoDataResponse>
+    @POST("TransactMultiItems")
+    suspend fun TransactMultiItems(
+        @Body  body : TransactMultiItemsBody
     ) : Response<NoDataResponse>
     @GET("PurchaseOrderItemList_Return")
     suspend fun getPurchaseOrderItemListReturn(

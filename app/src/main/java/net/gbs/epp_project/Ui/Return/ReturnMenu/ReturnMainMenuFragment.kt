@@ -9,6 +9,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
+import net.gbs.epp_project.Tools.Tools.showBackButton
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
 import net.gbs.epp_project.databinding.FragmentReturnMainMenuBinding
 
@@ -35,6 +36,7 @@ class ReturnMainMenuFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        showBackButton(requireActivity())
         Tools.changeFragmentTitle(getString(R.string.return_menu), requireActivity())
     }
 }

@@ -9,7 +9,7 @@ import net.gbs.epp_project.databinding.PoItemsDialogBinding
 class MoveOrderLinesDialog(context: Context,onMoveOrderLineItemClicked: MoveOrderLinesAdapter.OnMoveOrderLineItemClicked):Dialog(context) {
     var linesList:List<MoveOrderLine> = listOf()
 
-    private val moveOrderLinesAdapter = MoveOrderLinesAdapter(onMoveOrderLineItemClicked)
+    private val moveOrderLinesAdapter = MoveOrderLinesAdapter(onMoveOrderLineItemClicked,context)
     private lateinit var binding: PoItemsDialogBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

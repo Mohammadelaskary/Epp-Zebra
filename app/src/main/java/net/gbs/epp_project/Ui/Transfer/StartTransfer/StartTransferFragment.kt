@@ -9,12 +9,12 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.lifecycle.MutableLiveData
 
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.Locator
+import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.OnHandItemForAllocate
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.SubInventory
@@ -61,6 +61,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             binding.transferQty,
             binding.subInventoryTo,
             binding.locatorTo,
+            binding.lotNumber
             )
         binding.transfer.setOnClickListener {
             val qty = getEditTextText(binding.transferQty)
@@ -73,6 +74,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
                     locatorCodeFrom = selectedLocatorCodeFrom,
                     subinventoryCodeTo = selectedSubInventoryCodeTo,
                     locatorCodeTo = selectedLocatorCodeTo,
+                    lotNum = selectedLot?.lotName,
                     qty = qty.toDouble(),
                     transactionDate = viewModel.getTodayDate()
                 )
@@ -88,6 +90,36 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         }
     }
 
+    private var lotList = listOf<Lot>()
+    private lateinit var lotAdapter: ArrayAdapter<Lot>
+    private var selectedLot: Lot? = null
+    private fun setUpLotSpinner() {
+        binding.lotNumberSpinner.setOnItemClickListener { _, _, selectedPosition, _ ->
+            selectedLot = lotList[selectedPosition]
+        }
+    }
+    private fun observeGettingLotList() {
+        viewModel.getLotListStatus.observe(requireActivity()){
+            when(it.status){
+                Status.LOADING ->{
+                    loadingDialog!!.show()
+                }
+                Status.SUCCESS -> {
+                    loadingDialog!!.hide()
+                }
+                else -> {
+                    loadingDialog!!.hide()
+//                    warningDialog(requireContext(),it.message)
+                }
+            }
+        }
+        viewModel.getLotListLiveData.observe(requireActivity()){
+            Log.d(TAG, "observeGettingLotList: ${it.size}")
+            lotList = it
+            lotAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,lotList)
+            binding.lotNumberSpinner.setAdapter(lotAdapter)
+        }
+    }
     private fun setUpDateDialog() {
         binding.date.setOnClickListener {
             Tools.datePicker(requireContext(), binding.date)
@@ -99,6 +131,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
     private fun setUpSpinners() {
         setUpSubInventorySpinner()
         setUpLocatorsSpinner()
+        setUpLotSpinner()
     }
 
     private fun observeGettingData() {
@@ -107,19 +140,20 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         observeGettingLocatorsList()
         observeGettingItemData()
         observeTransferingItem()
+        observeGettingLotList()
     }
 
     private fun observeTransferingItem() {
         viewModel.transferMaterialStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showSuccessAlerter(it.message,requireActivity())
                     clearItemData()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -134,6 +168,8 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         binding.subInventoryFromSpinner.setText("",false)
         clearSubInventoryFrom()
         clearLocatorFrom()
+        binding.lotNumberSpinner.setText("",false)
+        binding.lotNumber.visibility = GONE
         binding.transferQty.editText?.setText("")
         binding.subInventoryToSpinner.setText("",false)
         binding.locatorToSpinner.setText("",false)
@@ -157,10 +193,10 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
     private fun observeGettingItemData() {
         viewModel.getItemsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                     clearItemData()
                 }
@@ -168,8 +204,13 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         }
         viewModel.getItemsListLiveData.observe(requireActivity()){
             if (it.isNotEmpty()){
-                Log.d(TAG, "onBarcodeReadDataApi: ${it[0].iteMCODE}")
+                clearItemData()
                 itemData = it
+                if (itemData[0].mustHaveLot()) {
+                    binding.lotNumber.visibility = VISIBLE
+                } else {
+                    binding.lotNumber.visibility = GONE
+                }
                 fillItemData()
                 fillSubInventoryList()
             } else {
@@ -224,6 +265,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             binding.subInventoryFromSpinner.setText(selectedSubInventoryCodeFrom)
             selectedLocatorCodeFrom = itemData[0].locator
             binding.locatorFromSpinner.setText(itemData[0].locator)
+            selectedItemData = itemData[0]
         }
     }
 
@@ -231,16 +273,16 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
 //        viewModel.getDateStatus.observe(requireActivity()){
 //            when(it.status){
 //                Status.LOADING -> {
-//                    loadingDialog.show()
+//                    loadingDialog!!.show()
 //                    binding.date.isEnabled = false
 //                }
 //                Status.SUCCESS -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.date.isEnabled = false
 //                    viewModel.getSubInvertoryList(orgId)
 //                }
 //                else -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.date.error = it.message
 //                    binding.date.isEnabled = true
 //                    viewModel.getSubInvertoryList(orgId)
@@ -261,10 +303,10 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
     private fun observeGettingSubInventoryList() {
         viewModel.getSubInvertoryListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }
@@ -297,6 +339,9 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
             selectedSubInventoryCodeTo = subInventoryList[selectedIndex].subInventoryCode
             viewModel.getLocatorsList(orgId, selectedSubInventoryCodeTo!!)
             subInvType = TransactMoveOrderFragment.SubInvType.To
+            if (selectedItemData?.mustHaveLot()!!){
+                viewModel.getLotList(orgId, itemData[0].inventorYITEMID, selectedSubInventoryCodeFrom)
+            }
         }
     }
 
@@ -308,12 +353,7 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
     }
 
     private fun fillFromLocatorList() {
-        Log.d(TAG, "fillFromLocatorListSelectedSubInventoryCodeFrom: $selectedSubInventoryCodeFrom")
         itemData.forEach(fun(item: OnHandItemForAllocate) {
-            Log.d(TAG, "fillFromLocatorListiteMCODEApi: ${item.iteMCODE}")
-            Log.d(TAG, "fillFromLocatorListfilledItemCode: ${getEditTextText(
-                binding.itemCode
-            )}")
             if (item.subinventory == selectedSubInventoryCodeFrom && item.iteMCODE == getEditTextText(
                     binding.itemCode
                 )
@@ -333,6 +373,8 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         if (locatorsFromList.size==1){
             binding.locatorFromSpinner.setText(locatorsFromList[0].locatorCode)
             selectedLocatorCodeFrom = locatorsFromList[0].locatorCode
+            selectedItemData = itemData.find { it.locator == selectedLocatorCodeFrom && it.subinventory == selectedSubInventoryCodeFrom }
+            fillOnHandQty()
         }
     }
 
@@ -346,10 +388,10 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
     private fun observeGettingLocatorsList() {
         viewModel.getLocatorsListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }
@@ -513,6 +555,12 @@ class StartTransferFragment : BaseFragmentWithViewModel<StartTransferViewModel,F
         if (date.isEmpty()){
             isReady = false
             binding.date.error = getString(R.string.please_select_date)
+        }
+        if (selectedItemData?.mustHaveLot()!!){
+            if (selectedLot==null){
+                isReady = false
+                binding.lotNumber.error = getString(R.string.please_select_lot)
+            }
         }
         if (qty.isEmpty()){
             isReady = false

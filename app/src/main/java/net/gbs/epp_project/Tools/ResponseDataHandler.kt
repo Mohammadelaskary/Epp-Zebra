@@ -24,7 +24,6 @@ class ResponseDataHandler<T : BaseResponse<D>, D>(
     private val statusWithMessage: SingleLiveEvent<StatusWithMessage>,
     val application: Application,
 ) {
-    val apiInterface = ApiFactory.getInstance()?.create(ApiInterface::class.java)!!
     @OptIn(DelicateCoroutinesApi::class)
     fun handleData(apiName:String?) {
         try {
@@ -38,14 +37,32 @@ class ResponseDataHandler<T : BaseResponse<D>, D>(
                         )
                     )
                 } else {
-                    if (USER?.isShowErrorMessage!!&&response.body()?.responseStatus?.errorMessage!=null) {
-                        statusWithMessage.postValue(
-                            StatusWithMessage(
-                                Status.ERROR,
-                                response.body()?.responseStatus?.errorMessage!!
+                    if (USER?.isShowErrorMessage != null) {
+                        if (USER?.isShowErrorMessage!!) {
+                            if (response.body()?.responseStatus?.errorMessage != null) {
+                                statusWithMessage.postValue(
+                                    StatusWithMessage(
+                                        Status.ERROR,
+                                        response.body()?.responseStatus?.errorMessage!!
+                                    )
+                                )
+                            } else {
+                                statusWithMessage.postValue(
+                                    StatusWithMessage(
+                                        Status.ERROR,
+                                        response.body()?.responseStatus?.statusMessage!!
+                                    )
+                                )
+                            }
+                        } else {
+                            statusWithMessage.postValue(
+                                StatusWithMessage(
+                                    Status.ERROR,
+                                    response.body()?.responseStatus?.statusMessage!!
+                                )
                             )
-                        )
-                    } else{
+                        }
+                    } else {
                         statusWithMessage.postValue(
                             StatusWithMessage(
                                 Status.ERROR,
@@ -63,6 +80,7 @@ class ResponseDataHandler<T : BaseResponse<D>, D>(
                         )
                     )
                 )
+
             }
 
         } catch (ex: Exception) {

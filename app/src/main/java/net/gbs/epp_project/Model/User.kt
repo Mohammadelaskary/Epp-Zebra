@@ -24,6 +24,8 @@ data class User(
     @SerializedName("isIndirectChemical"  ) var isIndirectChemical  : Boolean? = null,
     @SerializedName("isSpareParts"        ) var isSpareParts        : Boolean? = null,
     @SerializedName("isIssueFinalProduct" ) var isIssueFinalProduct : Boolean? = null,
+    @SerializedName("isReceiveFinalProduct" ) var isReceiveFinalProduct : Boolean? = null,
+    @SerializedName("isItemInfoFinalProduct" ) var isItemInfoFinalProduct : Boolean? = null,
     @SerializedName("isReturnToVendor"    ) var isReturnToVendor    : Boolean? = null,
     @SerializedName("isReturnToWarehouse" ) var isReturnToWarehouse : Boolean? = null,
     @SerializedName("isTransfer"          ) var isTransfer          : Boolean? = null,
@@ -38,7 +40,16 @@ data class User(
     @SerializedName("oracleUserId"        ) var userId              : Int?     = null,
     @SerializedName("serverDateTime"      ) var serverDateTime      : String?  = "26-09-2024",
     @SerializedName("isShowErrorMessage"  ) var isShowErrorMessage  : Boolean? = null,
+    @SerializedName("organizations"       ) var organizations       : ArrayList<UserOrganization> = arrayListOf()
 ) {
     val manualEnter: Boolean
         get() = scanMode == 1
 }
+
+class UserOrganization (
+    @SerializedName("orgId"   ) var orgId   : Int?              = null,
+    @SerializedName("orgCode" ) var orgCode : String?           = null,
+    @SerializedName("orgName" ) var orgName : String?           = null,
+    @SerializedName("dateAdd" ) var dateAdd : String?           = null,
+    @SerializedName("items"   ) var items   : ArrayList<String> = arrayListOf()
+)

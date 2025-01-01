@@ -8,13 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.navigation.Navigation
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
-import net.gbs.epp_project.Base.BundleKeys.FACTORY
-import net.gbs.epp_project.Base.BundleKeys.FINAL_PRODUCT
-import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
-import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_CODE_KEY
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
-import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
-import net.gbs.epp_project.Base.BundleKeys.SPARE_PARTS
 import net.gbs.epp_project.Model.Organization
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
@@ -23,7 +17,7 @@ import net.gbs.epp_project.Tools.Tools.changeFragmentTitle
 import net.gbs.epp_project.Tools.Tools.clearInputLayoutError
 import net.gbs.epp_project.Tools.Tools.showBackButton
 import net.gbs.epp_project.Tools.Tools.warningDialog
-import net.gbs.epp_project.databinding.FragmentEppOrganizationsIssueBinding
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import net.gbs.epp_project.databinding.FragmentEppOrganizationsTransferBinding
 
 class EppOrganizationsTransferFragment : BaseFragmentWithViewModel<EppOrganizationsTransferViewModel,FragmentEppOrganizationsTransferBinding>(),OnClickListener {
@@ -52,11 +46,11 @@ class EppOrganizationsTransferFragment : BaseFragmentWithViewModel<EppOrganizati
     private fun observeGettingOrganizationsList() {
         viewModel.getOrganizationsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(),it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -93,17 +87,20 @@ class EppOrganizationsTransferFragment : BaseFragmentWithViewModel<EppOrganizati
         if (selectedOrgId==-1){
             binding.organizations.error = getString(R.string.please_select_organization)
         } else {
-            val bundle = Bundle()
-            bundle.putInt(ORGANIZATION_ID_KEY,selectedOrgId)
-            when(v?.id) {
-                R.id.start_transfer -> {
-                    Navigation.findNavController(v).navigate(
-                        R.id.action_eppOrganizationsTransferFragment_to_startTransferFragment,
-                        bundle
-                    )
+            val userOrganization = USER?.organizations?.find { it.orgId == selectedOrgId }
+            if (userOrganization!=null) {
+                val bundle = Bundle()
+                bundle.putInt(ORGANIZATION_ID_KEY, selectedOrgId)
+                when (v?.id) {
+                    R.id.start_transfer -> {
+                        Navigation.findNavController(v).navigate(
+                            R.id.action_eppOrganizationsTransferFragment_to_startTransferFragment,
+                            bundle
+                        )
+                    }
                 }
-
-
+            } else {
+                warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
             }
         }
     }

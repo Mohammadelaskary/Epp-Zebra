@@ -39,12 +39,12 @@ class AuditListFragment : BaseFragmentWithViewModel<AuditListViewModel,FragmentA
         viewModel.getAuditOrdersListStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING -> {
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                     binding.noData.visibility = GONE
                 }
-                Status.SUCCESS -> loadingDialog.dismiss()
+                Status.SUCCESS -> loadingDialog!!.dismiss()
                 else -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     binding.noData.visibility = VISIBLE
                     binding.noData.text = it.message
                 }

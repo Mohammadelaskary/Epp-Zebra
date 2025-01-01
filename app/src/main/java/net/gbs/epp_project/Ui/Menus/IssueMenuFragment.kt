@@ -19,6 +19,7 @@ import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
 import net.gbs.epp_project.Tools.Tools.showBackButton
 import net.gbs.epp_project.Tools.Tools.showLogOutButton
+import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import net.gbs.epp_project.databinding.FragmentIssueMenuBinding
 import java.util.Timer
@@ -40,20 +41,39 @@ class IssueMenuFragment : Fragment() {
         val bundle = Bundle()
         handleAuthority()
         binding.factory.setOnClickListener {
-            bundle.putString(SOURCE_KEY, FACTORY)
-            bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,FACTORY_ORGANIZATION_ID)
-            Navigation.findNavController(it).navigate(R.id.action_issueMenuFragment_to_transactMoveOrderFragment,bundle)
+            val userOrganization = USER?.organizations?.find { it.orgId == FACTORY_ORGANIZATION_ID }
+            if (userOrganization!=null) {
+                bundle.putString(SOURCE_KEY, FACTORY)
+                bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY, FACTORY_ORGANIZATION_ID)
+                Navigation.findNavController(it)
+                    .navigate(R.id.action_issueMenuFragment_to_transactMoveOrderFragment, bundle)
+            } else {
+                warningDialog(requireContext(),
+                    getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+            }
         }
         
         binding.spareParts.setOnClickListener {
-            bundle.putString(SOURCE_KEY, SPARE_PARTS)
-            bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,SPARE_PARTS_ORGANIZATION_ID)
-            Navigation.findNavController(it).navigate(R.id.action_issueMenuFragment_to_transactSparePartsWorkOrderFragment,bundle)
+            val userOrganization = USER?.organizations?.find { it.orgId == SPARE_PARTS_ORGANIZATION_ID }
+            if (userOrganization!=null) {
+                bundle.putString(SOURCE_KEY, SPARE_PARTS)
+                bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,SPARE_PARTS_ORGANIZATION_ID)
+                Navigation.findNavController(it).navigate(R.id.action_issueMenuFragment_to_transactSparePartsWorkOrderFragment,bundle)
+            } else {
+                warningDialog(requireContext(),
+                    getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+            }
         }
         binding.indirectChemicals.setOnClickListener {
-            bundle.putString(SOURCE_KEY, INDIRECT_CHEMICALS)
-            bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,SPARE_PARTS_ORGANIZATION_ID)
-            Navigation.findNavController(it).navigate(R.id.action_issueMenuFragment_to_transactSparePartsWorkOrderFragment,bundle)
+            val userOrganization = USER?.organizations?.find { it.orgId == SPARE_PARTS_ORGANIZATION_ID }
+            if (userOrganization!=null) {
+                bundle.putString(SOURCE_KEY, INDIRECT_CHEMICALS)
+                bundle.putInt(BundleKeys.ORGANIZATION_ID_KEY,SPARE_PARTS_ORGANIZATION_ID)
+                Navigation.findNavController(it).navigate(R.id.action_issueMenuFragment_to_transactSparePartsWorkOrderFragment,bundle)
+            } else {
+                warningDialog(requireContext(),
+                    getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+            }
         }
 
     }

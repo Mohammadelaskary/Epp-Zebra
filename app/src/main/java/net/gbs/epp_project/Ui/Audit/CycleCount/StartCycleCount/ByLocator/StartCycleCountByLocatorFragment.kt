@@ -66,14 +66,14 @@ class StartCycleCountByLocatorFragment
     private fun observeFinishingCycleCount() {
         viewModel.finishCycleCountStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.showSuccessAlerter(it.message, requireActivity())
                     back(this)
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }
@@ -83,14 +83,14 @@ class StartCycleCountByLocatorFragment
     private fun observeSavingCycleDetails() {
         viewModel.saveCycleCountStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearData()
                     Tools.showSuccessAlerter(it.message, requireActivity())
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }
@@ -108,10 +108,10 @@ class StartCycleCountByLocatorFragment
     private fun observeGettingItemsList() {
         viewModel.getItemsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }

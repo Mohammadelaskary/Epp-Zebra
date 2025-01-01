@@ -19,6 +19,8 @@ import net.gbs.epp_project.Tools.Tools.showBackButton
 import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.databinding.FragmentItemInfoBinding
 import net.gbs.epp_project.Tools.ZebraScanner
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
+
 class ItemInfoFragment : BaseFragmentWithViewModel<ItemInfoViewModel,FragmentItemInfoBinding>()
 //    ,StatusListener,DataListener
     ,ZebraScanner.OnDataScanned {
@@ -68,13 +70,13 @@ class ItemInfoFragment : BaseFragmentWithViewModel<ItemInfoViewModel,FragmentIte
             Log.d(TAG, "observeGettingItemInfo: ${it.status}")
             when(it.status){
                 Status.LOADING -> {
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(),it.message)
                 }
             }
@@ -94,11 +96,11 @@ class ItemInfoFragment : BaseFragmentWithViewModel<ItemInfoViewModel,FragmentIte
     private fun observeGettingOrganizationsList() {
         viewModel.getOrganizationsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 Status.ERROR,Status.NETWORK_FAIL -> {
                     Tools.warningDialog(requireContext(), it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -118,8 +120,13 @@ class ItemInfoFragment : BaseFragmentWithViewModel<ItemInfoViewModel,FragmentIte
     private var selectedOrgId = -1
     private fun setUpOrganizationsSpinner() {
         binding.orgCodeSpinner.setOnItemClickListener { _, _, i, _ ->
-            selectedOrgId = organizations[i].organizationId!!
-            clearScreenData()
+            val userOrganization = USER?.organizations?.find { it.orgId == organizations[i].organizationId!! }
+            if (userOrganization!=null) {
+                selectedOrgId = organizations[i].organizationId!!
+                clearScreenData()
+            } else {
+                warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+            }
         }
     }
 

@@ -114,13 +114,13 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
         viewModel.getLotListStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                 }
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(),it.message)
                 }
             }
@@ -176,7 +176,7 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private lateinit var moveOrdersAdapter: ArrayAdapter<ReturnWorkOrder>
     private fun setUpMoveOrdersNumbersSpinner() {
         binding.workOrderNumberSpinner?.setOnItemClickListener { _, _, position, _ ->
-            selectedMoveOrder = workOrdersList[position]
+            selectedMoveOrder = workOrdersList.find { it.workOrderName== getEditTextText(binding.workOrderNumber) }
             binding.info.isEnabled = false
 //            viewModel.getIssueOrderLists(selectedMoveOrder?.moveOrderRequestNumber!!, orgId)
             viewModel.getReturnWorkOrderLines(selectedMoveOrder?.workOrderName!!, orgId)
@@ -189,11 +189,11 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private fun observeGettingWorkOrdersList() {
         viewModel.getWorkOrdersListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(), it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -228,9 +228,9 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private fun observeAllocatingTransactingItems() {
         viewModel.allocateItemsStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     clearLineData()
 //                    back(this)
                     viewModel.getReturnWorkOrderLines(selectedMoveOrder?.workOrderName!!, orgId)
@@ -239,7 +239,7 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
                 }
 
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -264,10 +264,10 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private fun observeGettingSubInventoryList() {
         viewModel.getSubInvertoryListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }
@@ -305,10 +305,10 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private fun observeGettingLocatorsList() {
         viewModel.getLocatorsListStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(), it.message)
                 }
             }
@@ -343,10 +343,10 @@ class ReturnToWarehouseFragment : BaseFragmentWithViewModel<ReturnToWarehouseVie
     private fun observeGettingMoveOrderLines() {
         viewModel.getReturnWorkOrderLinesStatus.observe(requireActivity()) {
             when (it.status) {
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(), it.message)
                 }
             }

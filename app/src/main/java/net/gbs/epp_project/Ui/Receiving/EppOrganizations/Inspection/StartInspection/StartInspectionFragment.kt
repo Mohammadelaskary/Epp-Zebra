@@ -9,13 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import androidx.navigation.findNavController
-import com.google.gson.Gson
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.PO_DETAILS_ITEM_2_Key
-import net.gbs.epp_project.Base.BundleKeys.PURCHASE_ORDER_KEY
 import net.gbs.epp_project.Model.PODetailsItem2
-import net.gbs.epp_project.Model.PurchaseOrder
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
@@ -59,15 +55,15 @@ class StartInspectionFragment : BaseFragmentWithViewModel<StartInspectionViewMod
 //        viewModel.getDateStatus.observe(requireActivity()){
 //            when(it.status){
 //                Status.LOADING  -> {
-//                    loadingDialog.show()
+//                    loadingDialog!!.show()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                Status.SUCCESS ->{
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                else -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = true
 //                }
 //            }
@@ -79,14 +75,14 @@ class StartInspectionFragment : BaseFragmentWithViewModel<StartInspectionViewMod
     private fun observeInspection() {
         viewModel.inspectStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showSuccessAlerter(it.message,requireActivity())
                     back(this)
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }

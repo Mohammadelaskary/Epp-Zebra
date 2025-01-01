@@ -34,6 +34,8 @@ import java.lang.NumberFormatException
 import java.util.Calendar
 import kotlin.Exception
 import net.gbs.epp_project.Tools.ZebraScanner
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
+
 class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,FragmentStartReceiveBinding>(),View.OnClickListener,
 //    Scanner.DataListener,
 //    Scanner.StatusListener
@@ -108,15 +110,15 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
 //        viewModel.getDateStatus.observe(requireActivity()){
 //            when(it.status){
 //                Status.LOADING  -> {
-//                    loadingDialog.show()
+//                    loadingDialog!!.show()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                Status.SUCCESS ->{
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                else -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = true
 //                }
 //            }
@@ -130,14 +132,14 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
     private fun observeReceivingItems() {
         viewModel.itemReceivingResultStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     successDialog(requireContext(),"Saved successfully\nReceipt number:${binding.receiptNo.editText?.text.toString()}")
                     clearOrganizationData()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
 //                    successDialog(requireContext(),"Saved successfully\nReceipt number:${binding.receiptNo.editText?.text.toString()}")
 //                    clearOrganizationData()
@@ -181,10 +183,10 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
     private fun observeGetPreviousReceiptNo() {
         viewModel.getPreviousReceiptNoStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -203,10 +205,10 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
         }
         viewModel.getNextReceiptNoStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -216,14 +218,14 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
     private fun observeOrganizations() {
         viewModel.getPoOrganizationsStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 Status.ERROR -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.org.error = it.message
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -247,22 +249,27 @@ class StartReceiveFragment : BaseFragmentWithViewModel<StartReceiveViewModel,Fra
         organizationsAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,poOrganizations)
         binding.organizationSpinner.setAdapter(organizationsAdapter)
         binding.organizationSpinner.setOnItemClickListener{ _: AdapterView<*>, _: View, position: Int, _: Long ->
-            selectedOrganization = poOrganizations[position]
-            viewModel.getPurchaseOrderDetailsList(
-                selectedOrganization!!.organizationId!!,
-                purchaseOrder.poHeaderId.toString()
-            )
-            binding.isNewReceiptNo.isChecked = true
+            val userOrganization = USER?.organizations?.find { it.orgId==poOrganizations[position].organizationId }
+            if (userOrganization!=null) {
+                selectedOrganization = poOrganizations[position]
+                viewModel.getPurchaseOrderDetailsList(
+                    selectedOrganization!!.organizationId!!,
+                    purchaseOrder.poHeaderId.toString()
+                )
+                binding.isNewReceiptNo.isChecked = true
+            } else {
+                warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+            }
         }
     }
 
     private fun observeItemsList() {
         viewModel.getPurchaseOrderDetailsListStatus.observe(viewLifecycleOwner){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }

@@ -5,10 +5,10 @@ import android.content.ContentValues.TAG
 import android.provider.Settings
 import android.util.Log
 import com.honeywell.aidc.BuildConfig
-import net.gbs.epp_project.MainActivity.MainActivity.Companion.BASE_URL
-import net.gbs.epp_project.MainActivity.MainActivity.Companion.setBaseUrl
 import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Network.ApiFactory.ApiFactory
+import net.gbs.epp_project.Network.ApiFactory.BaseUrlProvider.Companion.updateBaseUrl
+import net.gbs.epp_project.Network.ApiFactory.RetrofitInstance
 import net.gbs.epp_project.Network.ApiInterface.ApiInterface
 import net.gbs.epp_project.Tools.CommunicationData
 import net.gbs.epp_project.Tools.FormatDateTime
@@ -19,18 +19,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 open class BaseRepository(val activity: Activity?) {
-    var apiInterface  :ApiInterface
-    var communicationData:CommunicationData
+    var apiInterface: ApiInterface
     init {
-        communicationData = CommunicationData(activity!!)
-        setBaseUrl(
-            communicationData.getProtocol(),
-            communicationData.getIpAddress(),
-            communicationData.getPortNumber(),
-        )
-        Log.d(TAG, "hasInternetConnectionRepo: $BASE_URL")
-        apiInterface = ApiFactory.getInstance()?.create(ApiInterface::class.java)!!
+        val communicationData = CommunicationData(activity!!)
+        val baseUrl = updateBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
+        Log.d(TAG, "BaseRepository: ${baseUrl}")
+        apiInterface = RetrofitInstance.apiService(baseUrl)
     }
+
 
     val localStorage = LocalStorage(activity!!)
     val lang = LocaleHelper.getLanguage(activity!!)!!
@@ -38,7 +34,7 @@ open class BaseRepository(val activity: Activity?) {
         activity?.contentResolver,
         Settings.Secure.ANDROID_ID
     )
-    val userId = SignInFragment.USER?.userId
+    val userId = USER?.userId
     suspend fun getSubInventoryList(
         orgId:Int
     ) = apiInterface.getSubInvList(
@@ -50,6 +46,14 @@ open class BaseRepository(val activity: Activity?) {
 
 
     suspend fun getLotList(orgId:String,itemId:Int?,subInventoryCode:String?) = apiInterface.getLotList(
+        userId = userId!!,
+        deviceSerialNo = deviceSerialNo,
+        appLang = lang,
+        orgId = orgId,
+        itemId = itemId,
+        SUBINVENTORY_CODE = subInventoryCode
+    )
+    suspend fun getDeliverLotList(orgId:String,itemId:Int?,subInventoryCode:String?) = apiInterface.getDeliverLotList(
         userId = userId!!,
         deviceSerialNo = deviceSerialNo,
         appLang = lang,

@@ -19,10 +19,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.LocalStorage
 import net.gbs.epp_project.MainActivity.MainActivity
-import net.gbs.epp_project.MainActivity.MainActivity.Companion.BASE_URL
-import net.gbs.epp_project.MainActivity.MainActivity.Companion.setBaseUrl
+import net.gbs.epp_project.Network.ApiFactory.BaseUrlProvider.Companion.updateBaseUrl
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.ChangeSettingsDialog
 import net.gbs.epp_project.Tools.CommunicationData
@@ -35,20 +35,14 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 
-class SplashFragment : Fragment(),ChangeSettingsDialog.OnButtonsClicked {
+class SplashFragment : BaseFragmentWithViewModel<SignInViewModel,FragmentSplashBinding>(),ChangeSettingsDialog.OnButtonsClicked {
 
-    private lateinit var loadingDialog: LoadingDialog
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        loadingDialog = LoadingDialog(requireActivity())
-    }
-    lateinit var navController: NavController
+
     private lateinit var changeSettingsDialog: ChangeSettingsDialog
     private lateinit var communicationData: CommunicationData
     private lateinit var localStorage: LocalStorage
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(requireView())
         communicationData = CommunicationData(requireActivity())
         changeSettingsDialog = ChangeSettingsDialog(requireContext(),requireActivity(),this)
         changeSettingsDialog.setCancelable(false)
@@ -67,7 +61,9 @@ class SplashFragment : Fragment(),ChangeSettingsDialog.OnButtonsClicked {
 //        navController.navigate(R.id.action_splashFragment_to_signInFragment)
     }
 
-    private lateinit var binding: FragmentSplashBinding
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSplashBinding
+        get() = FragmentSplashBinding::inflate
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,7 +80,7 @@ class SplashFragment : Fragment(),ChangeSettingsDialog.OnButtonsClicked {
     }
 
     fun hasInternetConnection(protocol: String,ipAddress:String,portNum:String){
-        loadingDialog.show()
+        loadingDialog!!.show()
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val url = URL("$protocol://$ipAddress:$portNum/api/GBSEPPWMS/CheckConnection")
@@ -103,24 +99,26 @@ class SplashFragment : Fragment(),ChangeSettingsDialog.OnButtonsClicked {
                     communicationData.savePortNum(portNum)
                     Log.d(TAG, "hasInternetConnectionlocal: ${communicationData.getIpAddress()}")
                     withContext(Dispatchers.Main) {
-                        setBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
-                        Log.d(TAG, "hasInternetConnection: $BASE_URL")
+                        updateBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
+//                        setBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
+//                        Log.d(TAG, "hasInternetConnection: $BASE_URL")
+                        viewModel.refreshRepository()
                         navController.navigate(R.id.action_splashFragment_to_signInFragment)
                         localStorage.setFirstTime(false)
-                        loadingDialog.hide()
+                        loadingDialog!!.hide()
                         if (changeSettingsDialog.isShowing)
                             changeSettingsDialog.dismiss()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        loadingDialog.hide()
+                        loadingDialog!!.hide()
                         changeSettingsDialog.show()
                     }
                 }
             } catch (e1: IOException) {
                 e1.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     changeSettingsDialog.show()
 //                    Tools.warningDialog(requireContext(), getString(R.string.wrong_connection_data))
                 }

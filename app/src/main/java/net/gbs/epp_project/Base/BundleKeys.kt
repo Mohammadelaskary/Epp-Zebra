@@ -25,6 +25,8 @@ object BundleKeys {
     const val PO_LINE_KEY = "po_line_key"
     const val PO_ITEMS_LIST_KEY = "po_items_list_key"
 
+    const val ADD_LOT_QTY_S_T_LINE = "add_lot_qty_s_to_line"
+
     const val FACTORY_ORGANIZATION_ID = 84
     const val SPARE_PARTS_ORGANIZATION_ID = 83
 }

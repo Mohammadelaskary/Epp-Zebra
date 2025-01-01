@@ -13,6 +13,7 @@ import net.gbs.epp_project.Base.BaseViewModel
 import net.gbs.epp_project.MainActivity.MainActivity
 import net.gbs.epp_project.Model.ApiRequestBody.MobileLogBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
+import net.gbs.epp_project.Model.ApiRequestBody.TransactMultiItemsBody
 import net.gbs.epp_project.Model.IssueOrderLists
 import net.gbs.epp_project.Model.Locator
 import net.gbs.epp_project.Model.MoveOrderLine
@@ -104,11 +105,11 @@ class TransactSparePartsWorkOrderViewModel(private val application: Application,
     }
     
     val allocateItemsStatus = SingleLiveEvent<StatusWithMessage>()
-    fun transactItems(body: TransactItemsBody){
+    fun transactMultiItems(body: TransactMultiItemsBody){
         allocateItemsStatus.postValue(StatusWithMessage(Status.LOADING))
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = issueRepository.transactItems(body)
+                val response = issueRepository.transactMultiItems(body)
                 ResponseHandler(response,allocateItemsStatus,application).handleData("TransactItems")
                 if (response.body()?.responseStatus?.errorMessage!=null)
                     issueRepository.MobileLog(

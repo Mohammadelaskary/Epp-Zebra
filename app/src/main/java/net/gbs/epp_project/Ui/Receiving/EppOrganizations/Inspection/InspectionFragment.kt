@@ -14,6 +14,7 @@ import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.Tools
 import net.gbs.epp_project.Tools.Tools.warningDialog
+import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import net.gbs.epp_project.databinding.FragmentInspectionBinding
 
 class InspectionFragment : BaseFragmentWithViewModel<InspectionViewModel,FragmentInspectionBinding>(),View.OnClickListener,PurchaseOrdersInspectionAdapter.POInspectionItemClick {
@@ -41,11 +42,12 @@ class InspectionFragment : BaseFragmentWithViewModel<InspectionViewModel,Fragmen
     }
 
     private fun observeGettingPOs() {
-        viewModel.poDetailsItemsLiveData.observe(requireActivity()) {
+        viewModel.poDetailsItemsLiveData.observe(requireActivity()) { poDetailsItem ->
             val itemsList = mutableListOf<PODetailsItem2>()
-            it.forEach {
-                if (!it.isinspected.toBoolean()&&!it.isdelivered.toBoolean())
-                    itemsList.add(it)
+            poDetailsItem.forEach {
+                if(it.itemqtyAccepted!!<=0||it.itemqtyRejected!!<=0)
+                    if (!it.isinspected.toBoolean())
+                        itemsList.add(it)
             }
             if (itemsList.isNotEmpty()) {
                 binding.errorMessage.visibility = GONE
@@ -59,14 +61,14 @@ class InspectionFragment : BaseFragmentWithViewModel<InspectionViewModel,Fragmen
         viewModel.poDetailsItemsStatus.observe(requireActivity()){
             when(it.status){
                 Status.LOADING ->{
-                    loadingDialog.show()
+                    loadingDialog!!.show()
                     binding.errorMessage.visibility = GONE
                 }
                 Status.SUCCESS ->{
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.errorMessage.visibility = VISIBLE
                     binding.errorMessage.text = it.message
                 }
@@ -88,9 +90,16 @@ class InspectionFragment : BaseFragmentWithViewModel<InspectionViewModel,Fragmen
     }
 
     override fun inspectionClicked(poDetailsItem2: PODetailsItem2) {
-        val bundle = Bundle()
-        bundle.putString(PO_DETAILS_ITEM_2_Key, PODetailsItem2.toJson(poDetailsItem2))
-        view?.findNavController()?.navigate(R.id.action_inspectionFragment_to_startInspectionFragment,bundle)
+        val userOrganization = USER?.organizations?.find { it.orgId == poDetailsItem2.shipToOrganizationId }
+        if (userOrganization!=null) {
+            val bundle = Bundle()
+            bundle.putString(PO_DETAILS_ITEM_2_Key, PODetailsItem2.toJson(poDetailsItem2))
+            view?.findNavController()
+                ?.navigate(R.id.action_inspectionFragment_to_startInspectionFragment, bundle)
+        } else {
+            warningDialog(requireContext(),
+                getString(R.string.this_user_isn_t_authorized_to_inspect_purchase_order_with_this_organization))
+        }
     }
 
     override fun onClick(v: View?) {

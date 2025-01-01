@@ -2,7 +2,7 @@ package net.gbs.epp_project.Model
 
 import com.google.gson.annotations.SerializedName
 
-class Lot (
+open class Lot (
     @SerializedName("org_id"               ) var orgId               : Int?    = null,
     @SerializedName("lotName"              ) var lotName             : String? = null,
     @SerializedName("inventorY_ITEM_ID"    ) var inventorYITEMID     : Int?    = null,

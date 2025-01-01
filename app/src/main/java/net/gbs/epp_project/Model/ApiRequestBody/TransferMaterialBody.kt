@@ -17,5 +17,4 @@ data class TransferMaterialBody (
     @SerializedName("userID"                ) var userID               : Int?    = null,
     @SerializedName("deviceSerialNo"        ) var deviceSerialNo       : String? = null,
     @SerializedName("applang"               ) var applang              : String? = null
-
 )

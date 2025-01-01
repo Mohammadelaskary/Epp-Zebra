@@ -4,6 +4,7 @@ import android.app.Activity
 import net.gbs.epp_project.Base.BaseRepository
 import net.gbs.epp_project.Model.ApiRequestBody.AllocateItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransactItemsBody
+import net.gbs.epp_project.Model.ApiRequestBody.TransactMultiItemsBody
 import net.gbs.epp_project.Model.ApiRequestBody.TransferMaterialBody
 import net.gbs.epp_project.Model.Response.NoDataResponse
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment
@@ -133,6 +134,19 @@ class IssueRepository(activity: Activity) : BaseRepository(activity = activity) 
         body.userId = userId
         body.transaction_date = getTodayDate()
         return apiInterface.TransactItems(body)
+    }
+
+    suspend fun transactMultiItems(
+        body:TransactMultiItemsBody
+    ):Response<NoDataResponse> {
+        body.applang = lang
+        body.deviceSerialNo = deviceSerialNo
+        body.employeeId = SignInFragment.EMPLOYEE_ID
+        body.programApplicationId = SignInFragment.PROGRAM_APPLICATION_ID
+        body.programId = SignInFragment.PROGRAM_ID
+        body.userId = userId
+        body.transactionDate = getTodayDate()
+        return apiInterface.TransactMultiItems(body)
     }
 
 

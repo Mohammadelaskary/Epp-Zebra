@@ -9,12 +9,10 @@ import android.widget.ArrayAdapter
 import androidx.navigation.Navigation
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.FINAL_PRODUCT
-import net.gbs.epp_project.Base.BundleKeys.INDIRECT_CHEMICALS
 import net.gbs.epp_project.Base.BundleKeys.ISSUE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.ORGANIZATION_ID_KEY
 import net.gbs.epp_project.Base.BundleKeys.RECEIVE_FINAL_PRODUCT
 import net.gbs.epp_project.Base.BundleKeys.SOURCE_KEY
-import net.gbs.epp_project.Base.BundleKeys.SPARE_PARTS
 import net.gbs.epp_project.Model.Organization
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.R
@@ -26,7 +24,6 @@ import net.gbs.epp_project.Tools.Tools.warningDialog
 import net.gbs.epp_project.Ui.Issue.EppOrganizations.IssueMenus.EppOrganizationsIssueViewModel
 import net.gbs.epp_project.Ui.SplashAndSignIn.SignInFragment.Companion.USER
 import net.gbs.epp_project.databinding.FragmentEppOrganizationsFinalProductsMenuBinding
-import net.gbs.epp_project.databinding.FragmentEppOrganizationsSparePartsIssueBinding
 
 class EppOrganizationsFinalProductMenuFragment : BaseFragmentWithViewModel<EppOrganizationsIssueViewModel,FragmentEppOrganizationsFinalProductsMenuBinding>(),OnClickListener {
 
@@ -52,19 +49,19 @@ class EppOrganizationsFinalProductMenuFragment : BaseFragmentWithViewModel<EppOr
     }
 
     private fun handleAuthority() {
-        binding.moveOrderReceive.isEnabled = USER?.isReceive!!
+        binding.moveOrderReceive.isEnabled = USER?.isReceiveFinalProduct!!
         binding.issue.isEnabled = USER?.isIssueFinalProduct!!
-        binding.itemInfo.isEnabled = USER?.isItemInfo!!
+        binding.itemInfo.isEnabled = USER?.isItemInfoFinalProduct!!
     }
 
     private fun observeGettingOrganizationsList() {
         viewModel.getOrganizationsListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
                     warningDialog(requireContext(),it.message)
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                 }
             }
         }
@@ -107,27 +104,40 @@ class EppOrganizationsFinalProductMenuFragment : BaseFragmentWithViewModel<EppOr
         } else {
             val bundle = Bundle()
             bundle.putInt(ORGANIZATION_ID_KEY,selectedOrgId)
+            val userOrganization = USER?.organizations?.find { it.orgId == selectedOrgId }
             when(v?.id) {
                 R.id.move_order_receive -> {
-                    bundle.putString(SOURCE_KEY, RECEIVE_FINAL_PRODUCT)
-                    Navigation.findNavController(v).navigate(
-                        R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishProductsTransactMoveOrderFragment,
-                        bundle
-                    )
+                    if (userOrganization!=null) {
+                        bundle.putString(SOURCE_KEY, RECEIVE_FINAL_PRODUCT)
+                        Navigation.findNavController(v).navigate(
+                            R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishProductsTransactMoveOrderFragment,
+                            bundle
+                        )
+                    } else {
+                        warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+                    }
                 }
                 R.id.issue -> {
-                    bundle.putString(SOURCE_KEY, ISSUE_FINAL_PRODUCT)
-                    Navigation.findNavController(v).navigate(
-                        R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishProductsTransactMoveOrderFragment,
-                        bundle
-                    )
+                    if (userOrganization!=null) {
+                        bundle.putString(SOURCE_KEY, ISSUE_FINAL_PRODUCT)
+                        Navigation.findNavController(v).navigate(
+                            R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishProductsTransactMoveOrderFragment,
+                            bundle
+                        )
+                    } else {
+                        warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+                    }
                 }
                 R.id.item_info -> {
-                    bundle.putString(SOURCE_KEY, FINAL_PRODUCT)
-                    Navigation.findNavController(v).navigate(
-                        R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishedProductsItemInfoFragment,
-                        bundle
-                    )
+                    if (userOrganization!=null) {
+                        bundle.putString(SOURCE_KEY, FINAL_PRODUCT)
+                        Navigation.findNavController(v).navigate(
+                            R.id.action_eppOrganizationsFinalProductMenuFragment_to_finishedProductsItemInfoFragment,
+                            bundle
+                        )
+                    } else {
+                        warningDialog(requireContext(),getString(R.string.this_user_isn_t_authorized_to_select_that_organization))
+                    }
                 }
             }
         }

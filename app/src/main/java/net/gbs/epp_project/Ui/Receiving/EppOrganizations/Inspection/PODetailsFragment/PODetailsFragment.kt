@@ -56,14 +56,14 @@ class PODetailsFragment :
     private fun observeOrganizations() {
         viewModel.getPoOrganizationsStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 Status.ERROR -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     binding.org.error = it.message
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     Tools.warningDialog(requireContext(), it.message)
                 }
             }
@@ -83,7 +83,7 @@ class PODetailsFragment :
         binding.organizationSpinner.setOnItemClickListener(){ adapterView: AdapterView<*>, view2: View, position: Int, l: Long ->
             selectedOrganization = poOrganizations[position]
             viewModel.getPurchaseOrderDetailsList(
-                loadingDialog,
+                loadingDialog!!,
                 poDetailsAdapter,
                 selectedOrganization!!.organizationId!!,
                 purchaseOrder.poHeaderId.toString()

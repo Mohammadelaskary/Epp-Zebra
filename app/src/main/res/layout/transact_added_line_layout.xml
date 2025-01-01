@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/remove_item"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_delete"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/item_code"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/barcode_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_barcode_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_code"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/item_code"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/barcode_icon"
+            app:layout_constraintEnd_toStartOf="@+id/remove_item"
+            app:layout_constraintStart_toEndOf="@+id/barcode_icon"
+            app:layout_constraintTop_toTopOf="@+id/barcode_icon" />
+
+        <ImageView
+            android:id="@+id/sub_inventory_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_subinventory"
+            app:layout_constraintBottom_toBottomOf="@id/sub_inventory_from"
+            app:layout_constraintEnd_toStartOf="@+id/sub_inventory_from"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sub_inventory_from" />
+
+        <TextView
+            android:id="@+id/sub_inventory_from"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:text="dagdfgdifjdfgjifhdfgl;;ldhjdf;jdfg;dfjpodfjgjgdp"
+            app:layout_constraintBottom_toBottomOf="@+id/sub_inventory_icon"
+            app:layout_constraintEnd_toStartOf="@+id/arrow_icon"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/sub_inventory_icon"
+            app:layout_constraintTop_toBottomOf="@+id/item_code" />
+
+        <ImageView
+            android:id="@+id/arrow_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_forward_24"
+            app:layout_constraintBottom_toBottomOf="@+id/sub_inventory_from"
+            app:layout_constraintEnd_toStartOf="@+id/sub_inventory_to"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/sub_inventory_from"
+            app:layout_constraintTop_toTopOf="@+id/sub_inventory_from"/>
+
+        <TextView
+            android:id="@+id/sub_inventory_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="VDDFgldfgjaldfkh;gdlsfjgdf'oigjd'foijgdf'ijgdgi"
+            app:layout_constraintBottom_toBottomOf="@+id/sub_inventory_from"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/arrow_icon"
+            app:layout_constraintTop_toTopOf="@+id/sub_inventory_from" />
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_locator_code"
+            app:layout_constraintStart_toStartOf="@+id/sub_inventory_icon"
+            app:layout_constraintTop_toBottomOf="@+id/sub_inventory_from" />
+
+        <TextView
+            android:id="@+id/locator_from"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="dagdfgdifjdfgjifhdfgl;;ldhjdf;jdfg;dfjpodfjgjgdp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+            app:layout_constraintEnd_toStartOf="@+id/qty"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/sub_inventory_icon"
+            app:layout_constraintTop_toTopOf="@+id/imageView9" />
+
+        <TextView
+            android:id="@+id/qty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5.0"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintTop_toTopOf="@+id/imageView9" />
+
+        <TextView
+            android:id="@+id/imageView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lots"
+            app:layout_constraintBottom_toBottomOf="@+id/lots"
+            app:layout_constraintStart_toStartOf="@+id/sub_inventory_icon"
+            app:layout_constraintTop_toTopOf="@+id/lots" />
+
+        <TextView
+            android:id="@+id/lots"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:text="dagdfgdifjdfgjifhdfgl;;ldhjdf;jdfg;dfjpodfjgjgdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/sub_inventory_icon"
+            app:layout_constraintTop_toBottomOf="@+id/locator_from" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/lot_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="imageView10,lots"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

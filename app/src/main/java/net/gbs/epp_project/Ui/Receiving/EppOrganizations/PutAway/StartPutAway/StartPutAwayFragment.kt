@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,8 +19,8 @@ import android.widget.DatePicker
 import net.gbs.epp_project.Base.BaseFragmentWithViewModel
 import net.gbs.epp_project.Base.BundleKeys.PO_DETAILS_ITEM_2_Key
 import net.gbs.epp_project.Base.BundleKeys.PUT_AWAY_REJECT
+import net.gbs.epp_project.Model.DeliverLot
 import net.gbs.epp_project.Model.Locator
-import net.gbs.epp_project.Model.Lot
 import net.gbs.epp_project.Model.PODetailsItem2
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.SubInventory
@@ -103,17 +105,27 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
             showDatePicker(requireContext())
         }
 
+        binding.lotSerial.editText?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                if (getEditTextText(binding.lotSerial).isEmpty())
+//                    selectedLot = null
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
     private fun observeGettingLocatorList() {
         viewModel.getLocatorListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     if (!isRejected)
                         warningDialog(requireContext(),"Locators list:\n${it.message}")
                 }
@@ -151,10 +163,10 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
     private fun observeGetSubInventoryList() {
         viewModel.getSubinventoryListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),"Subinventories list:\n${it.message}")
                 }
             }
@@ -166,24 +178,24 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
         }
     }
 
-    private var lotList:List<Lot> = listOf()
-    private lateinit var lotAdapter: ArrayAdapter<Lot>
-    private var selectedLot:Lot? = null
+    private var lotList:List<DeliverLot> = listOf()
+    private lateinit var lotAdapter: ArrayAdapter<DeliverLot>
+//    private var selectedLot:Lot? = null
     private fun setUpLotSpinner() {
         lotAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,lotList)
         binding.lotSerialSpinner.setAdapter(lotAdapter)
         binding.lotSerialSpinner.setOnItemClickListener { adapterView, view, position, l ->
-            selectedLot = lotList[position]
+//            selectedLot = lotList[position]
         }
     }
 
     private fun observeLotList() {
         viewModel.getLotListStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
-                Status.SUCCESS -> loadingDialog.hide()
+                Status.LOADING -> loadingDialog!!.show()
+                Status.SUCCESS -> loadingDialog!!.hide()
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
 //                    warningDialog(requireContext(),it.message)
                     binding.lotSerial.visibility = GONE
                 }
@@ -207,14 +219,14 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
     private fun observePutAwayResponse() {
         viewModel.putAwayStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     showSuccessAlerter(it.message,requireActivity())
                     back(this)
                 }
                 else -> {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     warningDialog(requireContext(),it.message)
                 }
             }
@@ -264,6 +276,8 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
             R.id.put_away ->{
                 if(readyToSave()){
                     try {
+//                        Log.d(TAG, "onClick: ${selectedLot}")
+//                        val lotNum = if (selectedLot==null) getEditTextText(binding.lotSerial) else selectedLot?.lotName
                         viewModel.PutAwayMaterial(
                             poHeaderId = poDetailsItem.poHeaderId!!,
                             poLineId = poDetailsItem.poLineId!!,
@@ -273,7 +287,7 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
                             receiptNo = poDetailsItem.receiptno!!,
                             transactionDate = viewModel.getTodayDate(),
                             acceptedQty = poDetailsItem.itemqtyAccepted!!,
-                            lot_num = selectedLot?.lotName,
+                            lot_num = getEditTextText(binding.lotSerial),
                             isRejected = isRejected
                         )
                     } catch (ex:Exception){
@@ -289,15 +303,15 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
 //        viewModel.getDateStatus.observe(requireActivity()){
 //            when(it.status){
 //                Status.LOADING  -> {
-//                    loadingDialog.show()
+//                    loadingDialog!!.show()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                Status.SUCCESS ->{
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = false
 //                }
 //                else -> {
-//                    loadingDialog.hide()
+//                    loadingDialog!!.hide()
 //                    binding.dateEditText.isEnabled = true
 //                }
 //            }
@@ -335,10 +349,15 @@ class StartPutAwayFragment : BaseFragmentWithViewModel<StartPutAwayViewModel,Fra
                 isReady = false
             }
             if (poDetailsItem.mustHaveLot()){
-                if (selectedLot==null){
-                    binding.lotSerial.error = getString(R.string.please_select_lot)
-                    isReady = false
-                }
+//                if (selectedLot==null){
+//                    binding.lotSerial.error = getString(R.string.please_select_or_enter_lot)
+//                    isReady = false
+//                } else {
+                    if(getEditTextText(binding.lotSerial).isEmpty()){
+                        binding.lotSerial.error = getString(R.string.please_select_or_enter_lot)
+                        isReady = false
+                    }
+//                }
             }
         }
 

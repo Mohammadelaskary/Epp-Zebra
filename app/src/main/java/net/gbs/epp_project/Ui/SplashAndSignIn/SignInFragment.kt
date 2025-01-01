@@ -19,6 +19,7 @@ import net.gbs.epp_project.Base.LocalStorage
 import net.gbs.epp_project.MainActivity.MainActivity
 import net.gbs.epp_project.Model.Status
 import net.gbs.epp_project.Model.User
+import net.gbs.epp_project.Network.ApiFactory.BaseUrlProvider.Companion.updateBaseUrl
 import net.gbs.epp_project.R
 import net.gbs.epp_project.Tools.ChangeSettingsDialog
 import net.gbs.epp_project.Tools.ChangeSettingsDialog.Companion.refreshUi
@@ -88,13 +89,15 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
         super.onViewCreated(view, savedInstanceState)
 
         observeSignIn()
-        Log.d(ContentValues.TAG, "hasInternetConnectionSignIn: ${MainActivity.BASE_URL}")
         binding.signIn.setOnClickListener {
             val userName = getEditTextText(binding.userName)
             val password = getEditTextText(binding.password)
             if (readyToSignIn(userName,password)){
                 viewModel.signIn(userName,password)
             }
+        }
+        binding.changePassword.setOnClickListener {
+            navController.navigate(R.id.action_signInFragment_to_changePasswordFragment)
         }
         binding.settings.setOnClickListener {
             changeSettingsDialog.show()
@@ -115,18 +118,19 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
     private fun observeSignIn() {
         viewModel.signInStatus.observe(requireActivity()){
             when(it.status){
-                Status.LOADING -> loadingDialog.show()
+                Status.LOADING -> loadingDialog!!.show()
                 Status.SUCCESS ->{
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                 }
                 else -> {
-                    loadingDialog.dismiss()
+                    loadingDialog!!.dismiss()
                     warningDialog(requireContext(),it.message)
                 }
             }
         }
         viewModel.signInLiveData.observe(requireActivity()){
             USER = it
+            MainActivity.startSession()
             try {
                 if (FormatDateTime.compareTwoTimes(
                         it.serverDateTime!!.replace("T", " ").substring(0, 19),
@@ -153,21 +157,6 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
             } catch (ex:Exception){
                 Log.d(TAG, "observeSignIn: ${ex.message}")
             }
-            LocalStorage(requireActivity()).setStoredActualDate(USER?.serverDateTime!!.substring(0,10))
-            try {
-                if (USER?.serverDateTime!!.length > 19)
-                    LocalStorage(requireActivity()).setStoredActualFullDateTime(
-                        USER?.serverDateTime!!.substring(
-                            0,
-                            22
-                        )
-                    )
-                else
-                    LocalStorage(requireActivity()).setStoredActualFullDateTime(USER?.serverDateTime!!)
-            } catch (e:Exception){
-                viewModel.signIn(getEditTextText(binding.userName), getEditTextText(binding.password))
-            }
-            LocalStorage(requireActivity()).setStoredDeviceDate(viewModel.getDeviceTodayDate())
             manualEnter = it.manualEnter
             isAllowChangeQuantity = it.isAllowEditQuantity!!
         }
@@ -213,7 +202,7 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
     }
     private lateinit var communicationData: CommunicationData
     fun hasInternetConnection(protocol: String,ipAddress:String,portNum:String){
-        loadingDialog.show()
+        loadingDialog!!.show()
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val url = URL("$protocol://$ipAddress:$portNum/api/GBSEPPWMS/CheckConnection")
@@ -230,29 +219,28 @@ class SignInFragment : BaseFragmentWithViewModel<SignInViewModel, FragmentSignIn
                     communicationData.saveProtocol(protocol)
                     communicationData.saveIPAddress(ipAddress)
                     communicationData.savePortNum(portNum)
-                    Log.d(ContentValues.TAG, "hasInternetConnectionlocal: ${communicationData.getIpAddress()}")
                     withContext(Dispatchers.Main) {
-                        MainActivity.setBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
-                        Log.d(ContentValues.TAG, "hasInternetConnection: ${MainActivity.BASE_URL}")
+                        updateBaseUrl(communicationData.getProtocol(),communicationData.getIpAddress(),communicationData.getPortNumber())
+                        (requireActivity() as MainActivity).updateUrlOnScreen()
                         showSuccessAlerter("Connected successfully",requireActivity())
-                        MainActivity.setBaseUrl(protocol,ipAddress, portNum)
+//                        MainActivity.setBaseUrl(protocol,ipAddress, portNum)
                         viewModel.refreshRepository()
                         localStorage.setFirstTime(false)
-                        loadingDialog.hide()
+                        loadingDialog!!.hide()
                         if (changeSettingsDialog.isShowing)
                             changeSettingsDialog.dismiss()
 //                        refreshUi(requireActivity() as MainActivity)
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        loadingDialog.hide()
+                        loadingDialog!!.hide()
                         changeSettingsDialog.show()
                     }
                 }
             } catch (e1: IOException) {
                 e1.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    loadingDialog.hide()
+                    loadingDialog!!.hide()
                     changeSettingsDialog.show()
 //                    Tools.warningDialog(requireContext(), getString(R.string.wrong_connection_data))
                 }
